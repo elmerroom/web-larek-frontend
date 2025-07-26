@@ -229,3 +229,7 @@ type ApiListResponse<T> = {
 - Данные собираются пошагово через OrderModal и ContactsModal
 - Финальные данные отправляется через Api.post
 - При успехе открывается SuccessModal
+
+Ссылка на работу: [https://github.com/elmerroom/web-larek-frontend/tree/main]
+
+https://github.com/elmerroom/web-larek-frontend/tree/main
