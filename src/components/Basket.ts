@@ -25,9 +25,9 @@ export class Basket {
 
     this.renderItems(initialProducts);
 
-    this.button.addEventListener('click', () => {
-      this.events.emit('basket:open');
-    });
+    // this.button.addEventListener('click', () => {
+    //   this.events.emit('basket:open');
+    // });
 
     this.checkoutButton.addEventListener('click', () => {
     if (this.checkoutButton.hasAttribute('disabled')) return;
