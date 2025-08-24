@@ -2,7 +2,7 @@ import './scss/styles.scss';
 import { Api } from './components/base/api';
 import { EventEmitter } from './components/base/events';
 import { API_URL } from './utils/constants';
-import { AppState, Order, Product } from './types/index';
+import { AppState, Order, OrderSuccess, Product } from './types/index';
 import { AppView } from './view/AppView';
 import { Header } from './components/Header';
 import { ProductModel } from './components/models/ProductModel';
@@ -12,6 +12,7 @@ import { Modal } from './components/Modal';
 import { OrderModal } from './components/OrderModal';
 import { ContactsModal } from './components/ContactsModal';
 import { SuccessModal } from './components/SuccessModal';
+import { MarketApi } from './components/MarketApi';
 
 const initialState: AppState = {
   catalog: [],
@@ -29,23 +30,18 @@ const initialState: AppState = {
 
 const events = new EventEmitter();
 const api = new Api(API_URL);
+const marketApi = new MarketApi(api, events);
 const model = new ProductModel(events, initialState);
 const header = new Header(events);
 const appView = new AppView(events);
-const modal = new Modal();
+const modal = new Modal(events);
 const orderModal = new OrderModal(events);
 const contactsModal = new ContactsModal(events);
 const basket = new Basket(modal, events);
 
-let isFirstLoad = true;
+ events.on('catalog:needs-update', async () => {
 
-events.on('catalog:needs-update', () => {
-    if (isFirstLoad) {
-        model.loadProducts();
-        isFirstLoad = false;
-    } else {
-        events.emit('products:loaded', model.getState().catalog);
-    }
+    await model.loadProducts();
 });
 
 events.on('order:start', () => {
@@ -128,4 +124,15 @@ events.on('contacts:submit', (contactsData: { email: string; phone: string }) =>
             console.error('Ошибка оформления заказа:', error);
             events.emit('order:error', error);
         });
+
+        marketApi.buyProduct<OrderSuccess>(orderPayload)
+        .then((data) => {
+          console.log(data)
+        })
 });
+
+marketApi.getProduct()
+.then((data) => {
+  console.log(data)
+})
+

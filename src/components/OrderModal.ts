@@ -3,7 +3,7 @@ import { ensureElement, cloneTemplate } from '../utils/utils';
 import { Modal } from './Modal';
 
 export class OrderModal extends Modal {
-    private events: EventEmitter;
+    protected events: EventEmitter;
     private form: HTMLFormElement | null = null;
     private paymentButtons: HTMLButtonElement[] = [];
     private submitButton: HTMLButtonElement | null = null;
@@ -12,7 +12,7 @@ export class OrderModal extends Modal {
     private selectedPayment: 'card' | 'cash' | null = null;
 
     constructor(events: EventEmitter) {
-        super('#modal-container');
+        super(events);
         this.events = events;
     }
 

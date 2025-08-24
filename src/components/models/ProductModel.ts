@@ -2,29 +2,41 @@ import { Api } from '../base/api';
 import { EventEmitter } from '../base/events';
 import { Product, AppState, ApiListResponse } from '../../types/index';
 import { API_URL } from '../../utils/constants';
+import { MarketApi } from '../MarketApi';
+
 
 export class ProductModel {
-  private api: Api;
   private events: EventEmitter;
-  private state: AppState;
+  state: AppState;
+  marketApi: MarketApi
 
   constructor(events: EventEmitter, initialState: AppState) {
-    this.api = new Api(API_URL);
+
+    // вызов в конструкторе класса других классов является не верным решением, нужно пересмотреть дипсик и реализацию этого класса, также обратить внимание на интерфейс IApiMethods и класс MarketApi
+    
     this.events = events;
-    this.state = {
-      ...initialState,
-      order: {
-        ...initialState.order,
-        total: 0
-      }
-    };
+    this.state = initialState
   }
 
   async loadProducts(): Promise<void> {
     try {
-      const response = await this.api.get('/product');
-      this.state.catalog = (response as ApiListResponse<Product>).items;
+      // const response = await this.api.get('/product');
+      // console.log("response",  response)
+      // const response2: ApiListResponse<Product> = await this.marketApi.getProduct()
+      // console.log("response2", response2)
+      // this.state.catalog = response2.items
+
+
+
+      // this.state.catalog = (response as ApiListResponse<Product>).items;
+      
+      // this.state.catalog = (response2 as ApiListResponse<Product>).items
+      
+      // await this.marketApi.getProduct()
+      // const result = this.state.catalog
+      
       this.events.emit('products:loaded', this.state.catalog);
+      // console.log(result[0])
     } catch (error) {
       this.events.emit('product:error', error);
     }

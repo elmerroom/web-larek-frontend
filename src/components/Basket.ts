@@ -19,7 +19,7 @@ export class Basket {
     this.element = cloneTemplate<HTMLElement>('#basket');
     this.list = ensureElement<HTMLElement>('.basket__list', this.element);
     this.total = ensureElement<HTMLElement>('.basket__price', this.element);
-    this.button = ensureElement<HTMLElement>('.header__basket');
+    // this.button = ensureElement<HTMLElement>('.header__basket');
     this.checkoutButton = ensureElement<HTMLElement>('.basket__button', this.element);
     this.emptyMessage = this.createEmptyMessage();
 

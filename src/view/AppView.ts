@@ -5,7 +5,7 @@ import { ensureElement } from '../utils/utils';
 
 export class AppView {
   private productContainer: HTMLElement;
-  private cachedProducts: Product[] = [];
+  private cachedProducts: Product[];
 
   constructor(
     protected events: EventEmitter) {
@@ -14,6 +14,7 @@ export class AppView {
     events.on('products:loaded', (products: Product[]) => {
       this.cachedProducts = products
       this.renderProducts();
+      // console.log('olala')
     });
   }
 

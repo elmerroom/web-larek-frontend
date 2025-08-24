@@ -6,7 +6,7 @@ import { CDN_URL } from '../utils/constants';
 
 export class ProductModal extends Modal {
   private product: Product | null = null;
-  private events: EventEmitter;
+  protected events: EventEmitter;
   private button: HTMLButtonElement | null = null;
   private inBasket: boolean;
 
@@ -17,7 +17,7 @@ export class ProductModal extends Modal {
     inBasket: boolean,
     containerId: string = '#modal-container'
   ) {
-    super(containerId);
+    super(events);
     this.events = events;
     this.inBasket = inBasket;
     if (!product) {

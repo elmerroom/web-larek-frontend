@@ -3,7 +3,7 @@ import { ensureElement, cloneTemplate } from '../utils/utils';
 import { Modal } from './Modal';
 
 export class ContactsModal extends Modal {
-    private events: EventEmitter;
+    protected events: EventEmitter;
     private form: HTMLFormElement | null = null;
     private submitButton: HTMLButtonElement | null = null;
     private emailInput: HTMLInputElement | null = null;
@@ -11,7 +11,7 @@ export class ContactsModal extends Modal {
     private errorElement: HTMLElement | null = null;
 
     constructor(events: EventEmitter) {
-        super('#modal-container');
+        super(events);
         this.events = events;
     }
 

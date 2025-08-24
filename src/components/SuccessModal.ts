@@ -7,7 +7,7 @@ export class SuccessModal extends Modal {
     private description: HTMLElement;
 
     constructor(events: EventEmitter, total: number) {
-        super('#modal-container');
+        super(events);
         
         const template = cloneTemplate<HTMLElement>('#success');
         this.render(template);
