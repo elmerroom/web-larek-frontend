@@ -1,110 +1,143 @@
-import { EventEmitter } from './base/events';
-import { ensureElement, cloneTemplate } from '../utils/utils';
-import { Modal } from './Modal';
+// import { EventEmitter } from './base/events';
+// import { ensureElement, cloneTemplate } from '../utils/utils';
+// import { Modal } from './Modal';
+// import { Component } from './base/Component';
 
-export class ContactsModal extends Modal {
-    protected events: EventEmitter;
-    private form: HTMLFormElement | null = null;
-    private submitButton: HTMLButtonElement | null = null;
-    private emailInput: HTMLInputElement | null = null;
-    private phoneInput: HTMLInputElement | null = null;
-    private errorElement: HTMLElement | null = null;
+// interface IContctsModal {
+//     // initElements: void;
+//     initEventListeners: void;
+//     validateForm: void;
+//     validateEmail: boolean;
+//     showError: void;
+//     hideError: void;
+//     handleSubmit: void;
+// }
 
-    constructor(events: EventEmitter) {
-        super(events);
-        this.events = events;
-    }
+// export class ContactsModal extends Component<IContctsModal> {
+//     protected events: EventEmitter;
+//     private form: HTMLFormElement | null = null;
+//     private submitButton: HTMLButtonElement | null = null;
+//     private emailInput: HTMLInputElement | null = null;
+//     private phoneInput: HTMLInputElement | null = null;
+//     private errorElement: HTMLElement | null = null;
 
-    private initElements(): void {
-        try {
-            this.form = ensureElement<HTMLFormElement>('.form', this.container);
-            this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.form);
-            this.emailInput = ensureElement<HTMLInputElement>('[name="email"]', this.form);
-            this.phoneInput = ensureElement<HTMLInputElement>('[name="phone"]', this.form);
-            this.errorElement = ensureElement<HTMLElement>('.form__errors', this.form);
-        } catch (error) {
-            console.error('Error initializing form elements:', error);
-            throw error;
-        }
-    }
+//     constructor(container: HTMLElement, events: EventEmitter) {
+//         super(container);
+//         this.events = events;
 
-    private initEventListeners(): void {
-        if (!this.form) {
-            console.error('Form element not found');
-            return;
-        }
+//         this.form = ensureElement<HTMLFormElement>('.form', this.container);
+//         this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.form);
+//         this.emailInput = ensureElement<HTMLInputElement>('[name="email"]', this.form);
+//         this.phoneInput = ensureElement<HTMLInputElement>('[name="phone"]', this.form);
+//         this.errorElement = ensureElement<HTMLElement>('.form__errors', this.form);
+//     }
 
-        this.emailInput?.addEventListener('input', () => this.validateForm());
-        this.phoneInput?.addEventListener('input', () => this.validateForm());
 
-        this.form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleSubmit();
-        });
-    }
+//     set initEventListeners(): void {
+//         if (!this.form) {
+//             console.error('Form element not found');
+//             return;
+//         }
 
-    private validateForm(): void {
-        if (!this.submitButton || !this.emailInput || !this.phoneInput) return;
+//         this.emailInput?.addEventListener('input', () => this.validateForm());
+//         this.phoneInput?.addEventListener('input', () => this.validateForm());
 
-        const isEmailValid = this.validateEmail(this.emailInput.value);
-        const isPhoneValid = this.phoneInput.value.trim().length > 0;
+//         this.form.addEventListener('submit', (e) => {
+//             e.preventDefault();
+//             this.handleSubmit();
+//         });
+//     }
 
-        if (!isEmailValid) {
-            this.showError('Введите корректный email');
-            return;
-        }
+//     // private initElements(): void {
+//     //     try {
+//     //         this.form = ensureElement<HTMLFormElement>('.form', this.container);
+//     //         this.submitButton = ensureElement<HTMLButtonElement>('button[type="submit"]', this.form);
+//     //         this.emailInput = ensureElement<HTMLInputElement>('[name="email"]', this.form);
+//     //         this.phoneInput = ensureElement<HTMLInputElement>('[name="phone"]', this.form);
+//     //         this.errorElement = ensureElement<HTMLElement>('.form__errors', this.form);
+//     //     } catch (error) {
+//     //         console.error('Error initializing form elements:', error);
+//     //         throw error;
+//     //     }
+//     // }
 
-        if (!isPhoneValid) {
-            this.showError('Введите телефон');
-            return;
-        }
+//     // private initEventListeners(): void {
+//     //     if (!this.form) {
+//     //         console.error('Form element not found');
+//     //         return;
+//     //     }
 
-        this.hideError();
-        this.submitButton.disabled = false;
-    }
+//     //     this.emailInput?.addEventListener('input', () => this.validateForm());
+//     //     this.phoneInput?.addEventListener('input', () => this.validateForm());
 
-    private validateEmail(email: string): boolean {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
+//     //     this.form.addEventListener('submit', (e) => {
+//     //         e.preventDefault();
+//     //         this.handleSubmit();
+//     //     });
+//     // }
 
-    private showError(message: string): void {
-        if (this.errorElement) {
-            this.errorElement.textContent = message;
-        }
-        if (this.submitButton) {
-            this.submitButton.disabled = true;
-        }
-    }
+//     // private validateForm(): void {
+//     //     if (!this.submitButton || !this.emailInput || !this.phoneInput) return;
 
-    private hideError(): void {
-        if (this.errorElement) {
-            this.errorElement.textContent = '';
-        }
-    }
+//     //     const isEmailValid = this.validateEmail(this.emailInput.value);
+//     //     const isPhoneValid = this.phoneInput.value.trim().length > 0;
 
-    private handleSubmit(): void {
-        if (!this.emailInput || !this.phoneInput) return;
+//     //     if (!isEmailValid) {
+//     //         this.showError('Введите корректный email');
+//     //         return;
+//     //     }
 
-        const contactsData = {
-        email: this.emailInput.value.trim(),
-        phone: this.phoneInput.value.trim()
-    };
+//     //     if (!isPhoneValid) {
+//     //         this.showError('Введите телефон');
+//     //         return;
+//     //     }
 
-    this.events.emit('contacts:submit', contactsData);
-    }
+//     //     this.hideError();
+//     //     this.submitButton.disabled = false;
+//     // }
 
-    open(): void {
-        const template = cloneTemplate<HTMLElement>('#contacts');
-        this.render(template);
+//     // private validateEmail(email: string): boolean {
+//     //     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+//     // }
+
+//     // private showError(message: string): void {
+//     //     if (this.errorElement) {
+//     //         this.errorElement.textContent = message;
+//     //     }
+//     //     if (this.submitButton) {
+//     //         this.submitButton.disabled = true;
+//     //     }
+//     // }
+
+//     // private hideError(): void {
+//     //     if (this.errorElement) {
+//     //         this.errorElement.textContent = '';
+//     //     }
+//     // }
+
+//     // private handleSubmit(): void {
+//     //     if (!this.emailInput || !this.phoneInput) return;
+
+//     //     const contactsData = {
+//     //     email: this.emailInput.value.trim(),
+//     //     phone: this.phoneInput.value.trim()
+//     // };
+
+//     // this.events.emit('contacts:submit', contactsData);
+//     // }
+
+//     open(): void {
+//         const template = cloneTemplate<HTMLElement>('#contacts');
+//         this.render(template);
         
-        this.initElements();
-        this.initEventListeners();
+//         this.initElements();
+//         this.initEventListeners();
         
-        if (this.emailInput) this.emailInput.value = '';
-        if (this.phoneInput) this.phoneInput.value = '';
-        if (this.submitButton) this.submitButton.disabled = true;
-        this.hideError();
+//         if (this.emailInput) this.emailInput.value = '';
+//         if (this.phoneInput) this.phoneInput.value = '';
+//         if (this.submitButton) this.submitButton.disabled = true;
+//         this.hideError();
         
-        super.open();
-    }
-}
+//         super.open();
+//     }
+// }

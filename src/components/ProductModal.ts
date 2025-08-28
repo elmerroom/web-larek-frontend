@@ -4,20 +4,19 @@ import { ensureElement, cloneTemplate } from '../utils/utils';
 import { Modal } from './Modal';
 import { CDN_URL } from '../utils/constants';
 
-export class ProductModal extends Modal {
-  private product: Product | null = null;
+export class ProductModal  {
+  private product: Product | null;
   protected events: EventEmitter;
-  private button: HTMLButtonElement | null = null;
+  private button: HTMLButtonElement | null;
   private inBasket: boolean;
 
 
   constructor(
-     product: Product | null,
+     product: Product,
     events: EventEmitter,
     inBasket: boolean,
-    containerId: string = '#modal-container'
   ) {
-    super(events);
+    // super(events);
     this.events = events;
     this.inBasket = inBasket;
     if (!product) {
@@ -27,11 +26,11 @@ export class ProductModal extends Modal {
     
     this.product = product;
 
-    this.renderContent();
-    this.open();
+    this.render();
+    // this.open();
   }
 
-  private renderContent(): void {
+   render(): HTMLElement {
     if (!this.product) return;
 
     const template = cloneTemplate<HTMLElement>('#card-preview');
@@ -93,7 +92,8 @@ export class ProductModal extends Modal {
       });
     }
 
-    this.render(template);
+    // this.render(template);
+    return template;
   }
 
   private updateButton(): void {
@@ -127,6 +127,6 @@ export class ProductModal extends Modal {
     } else {
       this.events.emit('product:add', this.product);
     }
-    this.close();
+    // this.close();
   }
 }

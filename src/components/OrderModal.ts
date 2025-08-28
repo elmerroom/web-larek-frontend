@@ -1,8 +1,13 @@
 import { EventEmitter } from './base/events';
 import { ensureElement, cloneTemplate } from '../utils/utils';
 import { Modal } from './Modal';
+import { Component } from './base/Component';
 
-export class OrderModal extends Modal {
+interface IDataOrder {
+    data: HTMLElement
+}
+
+export class OrderModal extends Component<IDataOrder> {
     protected events: EventEmitter;
     private form: HTMLFormElement | null = null;
     private paymentButtons: HTMLButtonElement[] = [];
@@ -10,15 +15,16 @@ export class OrderModal extends Modal {
     private addressInput: HTMLInputElement | null = null;
     private errorElement: HTMLElement | null = null;
     private selectedPayment: 'card' | 'cash' | null = null;
+    private currentTemplate: HTMLElement | null = null; // ← Добавляем поле для хранения template
 
-    constructor(events: EventEmitter) {
-        super(events);
+    constructor(container: HTMLElement, events: EventEmitter) {
+        super(container);
         this.events = events;
     }
 
-    private initElements(): void {
+    private initElements(template: HTMLElement): void {
         try {
-            this.form = ensureElement<HTMLFormElement>('.form', this.container);
+            this.form = ensureElement<HTMLFormElement>('.form', template);
             this.paymentButtons = Array.from(this.form.querySelectorAll('.button_alt'));
             this.submitButton = ensureElement<HTMLButtonElement>('.order__button', this.form);
             this.addressInput = ensureElement<HTMLInputElement>('.form__input', this.form);
@@ -110,13 +116,31 @@ export class OrderModal extends Modal {
     this.events.emit('order:submit', orderData);
     }
 
-    open(): void {
+    // open(): void {
+    //     const template = cloneTemplate<HTMLElement>('#order');
+    //     // this.render(template);
+        
+    //     this.initElements();
+    //     this.initEventListeners();
+        
+    //     if (this.addressInput) this.addressInput.value = '';
+    //     this.selectedPayment = null;
+    //     if (this.submitButton) this.submitButton.disabled = true;
+    //     this.hideError();
+        
+    //     this.paymentButtons.forEach(button => {
+    //         button.classList.remove('button_alt-active');
+    //     });
+        
+    //     // super.open();
+    // }
+
+    render(): HTMLElement {
         const template = cloneTemplate<HTMLElement>('#order');
-        this.render(template);
-        
-        this.initElements();
+        this.currentTemplate = template; // или сохраняем template для работы
+        this.initElements(template);
         this.initEventListeners();
-        
+
         if (this.addressInput) this.addressInput.value = '';
         this.selectedPayment = null;
         if (this.submitButton) this.submitButton.disabled = true;
@@ -125,7 +149,6 @@ export class OrderModal extends Modal {
         this.paymentButtons.forEach(button => {
             button.classList.remove('button_alt-active');
         });
-        
-        super.open();
+        return template;
     }
 }

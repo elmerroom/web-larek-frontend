@@ -44,7 +44,7 @@ export class Basket {
     });
 
     this.events.on('basket:open', () => {
-      this.modal.open(this.element);
+      this.modal.open();
     });
   }
 
@@ -81,5 +81,9 @@ export class Basket {
       this.checkoutButton.removeAttribute('disabled');
       this.total.textContent = `${products.reduce((sum, item) => sum + (item.price || 0), 0)} синапсов`;
     }
+  }
+
+  getElement(): HTMLElement {
+    return this.element;
   }
 }

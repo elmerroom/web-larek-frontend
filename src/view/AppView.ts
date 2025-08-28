@@ -2,10 +2,12 @@ import { EventEmitter } from '../components/base/events';
 import { Product } from '../types';
 import { ProductCard } from '../components/ProductCard';
 import { ensureElement } from '../utils/utils';
+import { Modal } from '../components/Modal';
 
 export class AppView {
   private productContainer: HTMLElement;
   private cachedProducts: Product[];
+  modal: Modal
 
   constructor(
     protected events: EventEmitter) {
@@ -29,6 +31,9 @@ export class AppView {
         this.cachedProducts.forEach(product => {
             const card = new ProductCard(product, this.events);
             this.productContainer.appendChild(card.getElement());
+            // card.getElement().addEventListener('click', (event) => {
+            //   this.modal.content
+            // })
         });
     }
 
