@@ -12,16 +12,18 @@ export class ProductCard extends Component<Product> {
   protected itemPrice: HTMLElement;
   protected itemImg: HTMLImageElement;
   protected events: IEvents
+  protected product: Product
 
-  constructor(container: HTMLElement, events: IEvents) {
+  constructor(container: HTMLElement, events: IEvents, product: Product) {
     super(container);
-    this.events = events
+    this.events = events;
+    this.product = product
     this.itemCategory = ensureElement('.card__category', this.container);
     this.itemTitle = ensureElement('.card__title', this.container);
     this.itemPrice = ensureElement('.card__price', this.container);
     this.itemImg = ensureElement('.card__image', this.container) as HTMLImageElement;
 
-    this.container.addEventListener('click', () => this.events.emit('productModal:open', {card: this}))
+    this.container.addEventListener('click', () => this.events.emit('productModal:open',  this.product))
   }
 
   set category(value: string) {

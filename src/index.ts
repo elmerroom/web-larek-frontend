@@ -162,6 +162,7 @@ import { cloneTemplate } from './utils/utils';
 import { PageView } from './components/newComponents/PageView';
 import { ProductModal } from './components/newComponents/ProductModal';
 import { Product } from './types';
+import { Modal } from './components/newComponents/Common/Modal';
 
 
 const events = new EventEmitter()
@@ -177,11 +178,15 @@ const productModel = new ProductModel(events)
 
 const peoductTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
 
+const modal = new Modal(document.querySelector('#modal-container'), events)
+
 const modalConteiner = document.querySelector('#card-preview') as HTMLTemplateElement;
 
-const productModal = new ProductModal(document.querySelector('#modal-container'), events)
+const productModal = new ProductModal()
 
 
+console.log(productModel)
+// console.log(productModal)
 
 // console.log(marketApi.getProduct().then((data) => {
 
@@ -193,9 +198,14 @@ marketApi.getProduct()
 .then((data) => {
 // console.log(data)
 productModel.setProducts(data)
-console.log(productModel.getProducts())
-console.log(productModel.addToBasket(productModel.getProducts()[1]))
+// console.log(productModel.getProducts())
+// console.log(productModel.addToBasket(productModel.getProducts()[1]))
+// productModel.updateOrderTotal()
+
 })
+.catch((error) => {
+    console.error('Error loading products:', error);
+  })
 
 // const gallery = document.querySelector('.gallery') as HTMLElement;
 // const card1 = new ProductCard(cloneTemplate(peoductTemplate))
@@ -209,13 +219,12 @@ console.log(productModel.addToBasket(productModel.getProducts()[1]))
 
 events.on('product:changed', () => {
   const ProductHTMLArray = productModel.getProducts().map(product => 
-    new ProductCard(cloneTemplate(peoductTemplate), events).render(product)
+    new ProductCard(cloneTemplate(peoductTemplate), events, product).render(product)
   )
 
   page.render({
     productList: ProductHTMLArray,
     count: productModel.getTotal()
-
   })
 })
 
@@ -226,17 +235,30 @@ events.on('productModal:open', (product: Product) => {
   // const openModal = productModel.getProduct(item)
   // console.log(product.description)
   // const {product} = event;
-  const card = productModel.getProduct(product.id)
-  console.log(card)
+  // const card = productModel.getProduct(product.id)
+  // console.log(card.price)
+  // productModal
+  console.log(product)
+  modal.content = productModal.createProductContent(product)
+  // modal.render(product)
+  console.log(" ну и ну", productModal.createProductContent(product))
+  // console.log("ye b ", modal)
+  // productModal.render(
+  //   productModal.createProductContent(product)
+  //   // product
+  // )
+  modal.open(productModal.createProductContent(product))
+  // console.log(productModal.render(product))
+  // modal.render(productModal.render(product))
   // const { title, description, price, category, image} = productModel.getProduct(product.id)
   // const card = { title, description, price, category, image};
   // productModal.content = productModal.render(card)
-  productModal.open()
-  
+  // productModal.open()
+  // console.log(productModel.getTotal())
   // productModal.render({
   //   id: event.id,
   //   title: event.title
   // })
-  console.log('hi')
-  console.log(Object.values(event)[0].id)
+  // console.log('hi')
+  // console.log(Object.values(event)[0].id)
 })

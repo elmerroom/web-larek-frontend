@@ -14,7 +14,7 @@ export class Modal<T> extends Component<T> {
     this.events = events;
     const closeButtonElement = this.container.querySelector(".modal__close");
     this.pageWrapper = ensureElement<HTMLElement>('.page__wrapper');
-    this._content = ensureElement<HTMLElement>('.modal__content')
+    this._content = ensureElement<HTMLElement>('.modal__content', this.container)
 
       closeButtonElement.addEventListener("click", this.close.bind(this));
       this.container.addEventListener("mousedown", (evt) => {
@@ -31,9 +31,8 @@ export class Modal<T> extends Component<T> {
   
     open(content?: HTMLElement) {
       if (content) {
-            this.content = content;
-        }
-
+        this.content = content
+      }
       this.container.classList.add("modal_active");
       document.addEventListener("keyup", this.handleEscUp);
       this.pageWrapper.classList.add('page__wrapper_locked');
