@@ -41,6 +41,10 @@ export class ProductModel {
     return this.state.catalog
   }
 
+  getProduct(id: string): Product {
+    return this.state.catalog.find(item => item.id === id)
+  }
+
   getTotal() {
     return this.state.basket.length
   }

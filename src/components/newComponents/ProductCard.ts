@@ -2,6 +2,7 @@ import { Product } from "../../types";
 import { CDN_URL } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
+import { IEvents } from "../base/events";
 
 
 export class ProductCard extends Component<Product> {
@@ -10,13 +11,17 @@ export class ProductCard extends Component<Product> {
   protected itemTitle: HTMLElement;
   protected itemPrice: HTMLElement;
   protected itemImg: HTMLImageElement;
+  protected events: IEvents
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, events: IEvents) {
     super(container);
+    this.events = events
     this.itemCategory = ensureElement('.card__category', this.container);
     this.itemTitle = ensureElement('.card__title', this.container);
     this.itemPrice = ensureElement('.card__price', this.container);
     this.itemImg = ensureElement('.card__image', this.container) as HTMLImageElement;
+
+    this.container.addEventListener('click', () => this.events.emit('productModal:open', {card: this}))
   }
 
   set category(value: string) {

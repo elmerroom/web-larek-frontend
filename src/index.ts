@@ -160,6 +160,8 @@ import { ProductModel } from './components/newComponents/ProductModel';
 import { ProductCard } from './components/newComponents/ProductCard';
 import { cloneTemplate } from './utils/utils';
 import { PageView } from './components/newComponents/PageView';
+import { ProductModal } from './components/newComponents/ProductModal';
+import { Product } from './types';
 
 
 const events = new EventEmitter()
@@ -167,13 +169,17 @@ const api = new Api(API_URL)
 
 const gallery = document.querySelector('.gallery') as HTMLElement;
 
-const page = new PageView(document.querySelector('.page__wrapper') as HTMLElement)
+const page = new PageView(document.querySelector('.page') as HTMLElement, events)
 
 const marketApi = new MarketApi(api, events)
 
 const productModel = new ProductModel(events)
 
 const peoductTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
+
+const modalConteiner = document.querySelector('#card-preview') as HTMLTemplateElement;
+
+const productModal = new ProductModal(document.querySelector('#modal-container'), events)
 
 
 
@@ -203,7 +209,7 @@ console.log(productModel.addToBasket(productModel.getProducts()[1]))
 
 events.on('product:changed', () => {
   const ProductHTMLArray = productModel.getProducts().map(product => 
-    new ProductCard(cloneTemplate(peoductTemplate)).render(product)
+    new ProductCard(cloneTemplate(peoductTemplate), events).render(product)
   )
 
   page.render({
@@ -211,4 +217,26 @@ events.on('product:changed', () => {
     count: productModel.getTotal()
 
   })
+})
+
+events.on('productModal:open', (product: Product) => {
+  // prodductModal.open()
+  // console.log('click')
+  // console.log(item)
+  // const openModal = productModel.getProduct(item)
+  // console.log(product.description)
+  // const {product} = event;
+  const card = productModel.getProduct(product.id)
+  console.log(card)
+  // const { title, description, price, category, image} = productModel.getProduct(product.id)
+  // const card = { title, description, price, category, image};
+  // productModal.content = productModal.render(card)
+  productModal.open()
+  
+  // productModal.render({
+  //   id: event.id,
+  //   title: event.title
+  // })
+  console.log('hi')
+  console.log(Object.values(event)[0].id)
 })
