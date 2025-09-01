@@ -59,12 +59,12 @@ import { CDN_URL } from "../../utils/constants";
 //   }
 // }
 
-export class ProductModal {
+export class ProductModal extends Component<Product>{
 
   private previewTemplate: HTMLTemplateElement;
 
-  constructor() {
-    // super(container)
+  constructor(container?: HTMLElement) {
+    super(container)
    this.previewTemplate = document.querySelector('#card-preview') as HTMLTemplateElement;
   }
 
@@ -90,6 +90,11 @@ export class ProductModal {
     categoryElement.textContent = product.category;
     descriptionElement.textContent = product.description;
     priceElement.textContent = product.price ? `${product.price} синапсов` : 'Бесценно';
+
+    if (!product.price) {
+      buttonElement.textContent = 'Недоступно'
+      super.setDisabled(buttonElement, true)
+    }
 
     // Устанавливаем класс категории
     this.setCategoryClass(categoryElement, product.category);

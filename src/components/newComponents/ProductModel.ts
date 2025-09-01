@@ -65,4 +65,8 @@ export class ProductModel {
     this.events.emit('product:changed')
   }
 
+  getBasket(): Product[] {
+    return this.state.basket
+  }
+
 }

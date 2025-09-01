@@ -161,8 +161,9 @@ import { ProductCard } from './components/newComponents/ProductCard';
 import { cloneTemplate } from './utils/utils';
 import { PageView } from './components/newComponents/PageView';
 import { ProductModal } from './components/newComponents/ProductModal';
-import { Product } from './types';
+import { AppState, Product } from './types';
 import { Modal } from './components/newComponents/Common/Modal';
+import { BasketModal } from './components/newComponents/BasketModal';
 
 
 const events = new EventEmitter()
@@ -183,6 +184,7 @@ const modal = new Modal(document.querySelector('#modal-container'), events)
 const modalConteiner = document.querySelector('#card-preview') as HTMLTemplateElement;
 
 const productModal = new ProductModal()
+const basketModal = new BasketModal()
 
 
 console.log(productModel)
@@ -229,36 +231,12 @@ events.on('product:changed', () => {
 })
 
 events.on('productModal:open', (product: Product) => {
-  // prodductModal.open()
-  // console.log('click')
-  // console.log(item)
-  // const openModal = productModel.getProduct(item)
-  // console.log(product.description)
-  // const {product} = event;
-  // const card = productModel.getProduct(product.id)
-  // console.log(card.price)
-  // productModal
   console.log(product)
-  modal.content = productModal.createProductContent(product)
-  // modal.render(product)
-  console.log(" ну и ну", productModal.createProductContent(product))
-  // console.log("ye b ", modal)
-  // productModal.render(
-  //   productModal.createProductContent(product)
-  //   // product
-  // )
+  // modal.content = productModal.createProductContent(product)
   modal.open(productModal.createProductContent(product))
-  // console.log(productModal.render(product))
-  // modal.render(productModal.render(product))
-  // const { title, description, price, category, image} = productModel.getProduct(product.id)
-  // const card = { title, description, price, category, image};
-  // productModal.content = productModal.render(card)
-  // productModal.open()
-  // console.log(productModel.getTotal())
-  // productModal.render({
-  //   id: event.id,
-  //   title: event.title
-  // })
-  // console.log('hi')
-  // console.log(Object.values(event)[0].id)
+})
+
+events.on('basketModal:open', () => {
+  const basketItems = productModel.getBasket()
+  modal.open(basketModal.createBasketModal(basketItems))
 })

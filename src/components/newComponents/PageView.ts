@@ -31,6 +31,8 @@ export class PageView extends Component<IPageView> {
     
     this.basketCount.addEventListener('click', () => console.log('hi'))
 
+
+    this.basket.addEventListener('click', () => this.events.emit('basketModal:open'))
     // this.itemCategory = ensureElement('.card__category', this.container);
     // this.itemTitle = ensureElement('.card__title', this.container);
     // this.itemPrice = ensureElement('.card__price', this.container);
