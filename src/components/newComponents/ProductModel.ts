@@ -30,11 +30,13 @@ export class ProductModel {
     if (!this.state.basket.some(item => item.id === product.id)) {
       this.state.basket.push(product);
     }
+    this.events.emit('product:changed')
     return this.state.basket
   }
 
   removeFromBasket(productId: string) {
     this.state.basket = this.state.basket.filter(item => item.id !== productId);
+    this.events.emit('product:changed')
   }
 
   getProducts(): Product[] {
@@ -57,6 +59,7 @@ export class ProductModel {
   }
 
   clearBasket() {
+    this.events.emit('product:changed')
     this.state.basket = [];
   }
 
@@ -67,6 +70,10 @@ export class ProductModel {
 
   getBasket(): Product[] {
     return this.state.basket
+  }
+
+  isInBasket(productId: string): boolean {
+    return this.state.basket.some(item => item.id === productId);
   }
 
 }

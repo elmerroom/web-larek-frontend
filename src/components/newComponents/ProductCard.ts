@@ -11,8 +11,8 @@ export class ProductCard extends Component<Product> {
   protected itemTitle: HTMLElement;
   protected itemPrice: HTMLElement;
   protected itemImg: HTMLImageElement;
-  protected events: IEvents
-  protected product: Product
+  protected events: IEvents;
+  protected product: Product;
 
   constructor(container: HTMLElement, events: IEvents, product: Product) {
     super(container);

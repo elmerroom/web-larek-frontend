@@ -164,6 +164,7 @@ import { ProductModal } from './components/newComponents/ProductModal';
 import { AppState, Product } from './types';
 import { Modal } from './components/newComponents/Common/Modal';
 import { BasketModal } from './components/newComponents/BasketModal';
+import { BasketProduct } from './components/newComponents/BasketProduct';
 
 
 const events = new EventEmitter()
@@ -179,12 +180,16 @@ const productModel = new ProductModel(events)
 
 const peoductTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
 
+const basketTemplate = document.querySelector('#basket') as HTMLTemplateElement;
+
+const basketCardTemplate = document.querySelector('#card-basket') as HTMLTemplateElement;
+
 const modal = new Modal(document.querySelector('#modal-container'), events)
 
 const modalConteiner = document.querySelector('#card-preview') as HTMLTemplateElement;
 
-const productModal = new ProductModal()
-const basketModal = new BasketModal()
+const productModal = new ProductModal(events)
+const basketModal = new BasketModal(cloneTemplate(basketTemplate))
 
 
 console.log(productModel)
@@ -209,15 +214,6 @@ productModel.setProducts(data)
     console.error('Error loading products:', error);
   })
 
-// const gallery = document.querySelector('.gallery') as HTMLElement;
-// const card1 = new ProductCard(cloneTemplate(peoductTemplate))
-
-// card1.category = 'софт-скил'
-// card1.name = "Мфмка-таймер"
-// card1.price = null;
-// card1.image = "/Asterisk_2.svg"
-
-// gallery.append(card1.render())
 
 events.on('product:changed', () => {
   const ProductHTMLArray = productModel.getProducts().map(product => 
@@ -228,15 +224,47 @@ events.on('product:changed', () => {
     productList: ProductHTMLArray,
     count: productModel.getTotal()
   })
+
+  const ItemBasketHTMLArray = productModel.getBasket().map((product, index) => {
+    const basketProduct = new BasketProduct(cloneTemplate(basketCardTemplate), events, product)
+
+    basketProduct.index = String(index + 1);
+    return basketProduct.render(product)
+  }
+  )
+
+  // ItemBasketHTMLArray.
+
+  basketModal.render({
+    basketListItem: ItemBasketHTMLArray,
+    orderTotalPrice: productModel.updateOrderTotal()
+  })
+
+  // modal.render()
 })
 
 events.on('productModal:open', (product: Product) => {
-  console.log(product)
+  // console.log(product)
   // modal.content = productModal.createProductContent(product)
-  modal.open(productModal.createProductContent(product))
+  const inBasket = productModel.isInBasket(product.id)
+  modal.open(productModal.createProductContent(product, inBasket))
+  
 })
 
 events.on('basketModal:open', () => {
   const basketItems = productModel.getBasket()
   modal.open(basketModal.createBasketModal(basketItems))
+
+  
 })
+
+events.on('product:add', (product: Product) => {
+  productModel.addToBasket(product);
+  console.log(productModel.getBasket());
+});
+
+events.on('basket:remove', (product: Product) => {
+  // const basket = productModel.getBasket()
+  productModel.removeFromBasket(product.id);
+  console.log(product)
+});

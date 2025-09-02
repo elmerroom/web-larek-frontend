@@ -62,13 +62,15 @@ import { CDN_URL } from "../../utils/constants";
 export class ProductModal extends Component<Product>{
 
   private previewTemplate: HTMLTemplateElement;
+  protected events: IEvents;
 
-  constructor(container?: HTMLElement) {
+  constructor(events: IEvents, container?: HTMLElement) {
     super(container)
+    this.events = events
    this.previewTemplate = document.querySelector('#card-preview') as HTMLTemplateElement;
   }
 
-  createProductContent(product: Product): HTMLElement {
+  createProductContent(product: Product, inBasket: boolean): HTMLElement {
     const content = cloneTemplate(this.previewTemplate);
     
     const imageElement = content.querySelector('.card__image') as HTMLImageElement;
@@ -90,6 +92,23 @@ export class ProductModal extends Component<Product>{
     categoryElement.textContent = product.category;
     descriptionElement.textContent = product.description;
     priceElement.textContent = product.price ? `${product.price} синапсов` : 'Бесценно';
+
+    if (inBasket) {
+      buttonElement.textContent = "Удалить из корзины"
+      buttonElement.addEventListener('click', (event) => {
+        event.stopPropagation();
+      this.events.emit('basket:remove', product);
+      })
+    } else {
+      buttonElement.textContent = "В корзину"
+       buttonElement.addEventListener('click', (event) => {
+      // this.events.emit('product:add', product)
+      event.stopPropagation();
+      this.events.emit('product:add', product);
+    })
+    }
+
+   
 
     if (!product.price) {
       buttonElement.textContent = 'Недоступно'
@@ -131,4 +150,5 @@ export class ProductModal extends Component<Product>{
     Object.assign(this as object, data)
     return this.previewTemplate
   }
+  
 }
