@@ -1,6 +1,7 @@
 import { Product } from "../../types";
 import { cloneTemplate, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
+import { IEvents } from "../base/events";
 
 
 // export class BasketModal extends Component<Product> {
@@ -66,10 +67,11 @@ export class BasketModal extends Component<IBasketModal> {
   protected basketList: HTMLUListElement;
   protected busketButton: HTMLButtonElement;
   protected totalPrice: HTMLElement;
+  protected events: IEvents
   
-  constructor(container: HTMLElement) {
-    super(container)
-
+  constructor(container: HTMLElement, events: IEvents) {
+    super(container);
+    this.events = events
      this.basketList = ensureElement<HTMLUListElement>('.basket__list', this.container);
 
     this.busketButton = ensureElement<HTMLButtonElement>('.basket__button', this.container);
@@ -87,6 +89,10 @@ export class BasketModal extends Component<IBasketModal> {
         } else {
           
           this.busketButton.removeAttribute('disabled');
+          this.busketButton.addEventListener('click', () => {
+            // this.events.emit('modal:close');
+            this.events.emit('orderModal:open')
+          })
       // this.totalPrice.textContent = `${basketItems.reduce((sum, item) => sum + (item.price || 0), 0)} синапсов`;
     }
     

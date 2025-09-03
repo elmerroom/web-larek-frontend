@@ -165,6 +165,7 @@ import { AppState, Product } from './types';
 import { Modal } from './components/newComponents/Common/Modal';
 import { BasketModal } from './components/newComponents/BasketModal';
 import { BasketProduct } from './components/newComponents/BasketProduct';
+import { OrderModal } from './components/newComponents/OrderModal';
 
 
 const events = new EventEmitter()
@@ -184,12 +185,15 @@ const basketTemplate = document.querySelector('#basket') as HTMLTemplateElement;
 
 const basketCardTemplate = document.querySelector('#card-basket') as HTMLTemplateElement;
 
+const orderTemplate = document.querySelector('#order') as HTMLTemplateElement;
+
 const modal = new Modal(document.querySelector('#modal-container'), events)
 
 const modalConteiner = document.querySelector('#card-preview') as HTMLTemplateElement;
 
 const productModal = new ProductModal(events)
-const basketModal = new BasketModal(cloneTemplate(basketTemplate))
+const basketModal = new BasketModal(cloneTemplate(basketTemplate), events)
+const orderModal = new OrderModal(cloneTemplate(orderTemplate), events)
 
 
 console.log(productModel)
@@ -258,13 +262,25 @@ events.on('basketModal:open', () => {
   
 })
 
+events.on('orderModal:open', () => {
+  console.log(orderModal)
+  console.log(orderModal.render())
+  modal.open(orderModal.render())
+})
+
 events.on('product:add', (product: Product) => {
   productModel.addToBasket(product);
-  console.log(productModel.getBasket());
+  // modal.close()
+  // console.log(productModel.getBasket());
 });
 
 events.on('basket:remove', (product: Product) => {
   // const basket = productModel.getBasket()
   productModel.removeFromBasket(product.id);
   console.log(product)
+  
 });
+
+events.on('modal:close', () => {
+  modal.close()
+})

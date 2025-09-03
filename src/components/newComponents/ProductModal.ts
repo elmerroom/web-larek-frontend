@@ -98,6 +98,7 @@ export class ProductModal extends Component<Product>{
       buttonElement.addEventListener('click', (event) => {
         event.stopPropagation();
       this.events.emit('basket:remove', product);
+      this.events.emit('modal:close')
       })
     } else {
       buttonElement.textContent = "В корзину"
@@ -105,6 +106,7 @@ export class ProductModal extends Component<Product>{
       // this.events.emit('product:add', product)
       event.stopPropagation();
       this.events.emit('product:add', product);
+      this.events.emit('modal:close')
     })
     }
 
