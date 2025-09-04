@@ -161,7 +161,7 @@ import { ProductCard } from './components/newComponents/ProductCard';
 import { cloneTemplate } from './utils/utils';
 import { PageView } from './components/newComponents/PageView';
 import { ProductModal } from './components/newComponents/ProductModal';
-import { AppState, Product } from './types';
+import { AppState, Order, Product } from './types';
 import { Modal } from './components/newComponents/Common/Modal';
 import { BasketModal } from './components/newComponents/BasketModal';
 import { BasketProduct } from './components/newComponents/BasketProduct';
@@ -220,6 +220,7 @@ productModel.setProducts(data)
 
 
 events.on('product:changed', () => {
+  console.log('product:changed')
   const ProductHTMLArray = productModel.getProducts().map(product => 
     new ProductCard(cloneTemplate(peoductTemplate), events, product).render(product)
   )
@@ -248,7 +249,7 @@ events.on('product:changed', () => {
 })
 
 events.on('productModal:open', (product: Product) => {
-  // console.log(product)
+  console.log("productModal:open")
   // modal.content = productModal.createProductContent(product)
   const inBasket = productModel.isInBasket(product.id)
   modal.open(productModal.createProductContent(product, inBasket))
@@ -256,6 +257,7 @@ events.on('productModal:open', (product: Product) => {
 })
 
 events.on('basketModal:open', () => {
+  console.log('basketModal:open')
   const basketItems = productModel.getBasket()
   modal.open(basketModal.createBasketModal(basketItems))
 
@@ -263,24 +265,63 @@ events.on('basketModal:open', () => {
 })
 
 events.on('orderModal:open', () => {
-  console.log(orderModal)
-  console.log(orderModal.render())
+  console.log("orderModal:open")
+  // console.log(orderModal.render())
   modal.open(orderModal.render())
 })
 
 events.on('product:add', (product: Product) => {
   productModel.addToBasket(product);
   // modal.close()
-  // console.log(productModel.getBasket());
+  console.log('product:add');
 });
 
 events.on('basket:remove', (product: Product) => {
   // const basket = productModel.getBasket()
   productModel.removeFromBasket(product.id);
-  console.log(product)
+  console.log('basket:remove')
   
 });
 
 events.on('modal:close', () => {
   modal.close()
+  console.log('modal:close')
+})
+
+events.on('order:payCategory', (item) => {
+  console.log('order:payCategory')
+  const [...category] = Object.values(item)
+  const values = [...category]
+  // console.log(Object.values(item))
+  // console.log(values[0])
+  productModel.getState().order.payment = values[0]
+  // console.log(productModel.getState())
+
+  events.emit('order:change:button', productModel.getOrder())
+  // console.log(productModel.getOrder)
+}) 
+
+events.on('order:submit', (data: Order) => {
+  const orderAdress = data.address
+  orderModal.closeOrderModal()
+  productModel.state.order.address = orderAdress
+  console.log(productModel.getOrder())
+})
+
+events.on('validate:inspect', (text: HTMLInputElement) => {
+  const isValid = productModel.validateInput(text.value)
+  if (isValid) {
+    events.emit('text:valid')
+  } else {
+    events.emit('text:noValid')
+  }
+})
+
+events.on('validateButton:inspect', (buttons: HTMLButtonElement[]) => {
+  const isValid = productModel.validateButton(buttons)
+  if (isValid) {
+    events.emit('button:valid')
+  } else {
+    events.emit('button:noValid')
+  }
 })

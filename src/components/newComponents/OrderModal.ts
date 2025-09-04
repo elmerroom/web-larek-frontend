@@ -1,3 +1,4 @@
+import { Order } from "../../types";
 import { ensureAllElements, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
@@ -13,7 +14,7 @@ export class OrderModal extends Component<IDataOrder> {
     protected submitButton: HTMLButtonElement;
     protected addressInput: HTMLInputElement;
     protected errorElement: HTMLElement;
-    protected selectedPayment: 'card' | 'cash';
+    protected selectedPayment: 'card' | 'cash' | null;
 
   constructor(container: HTMLElement, events: IEvents) {
           super(container);
@@ -24,19 +25,21 @@ export class OrderModal extends Component<IDataOrder> {
         this.submitButton = ensureElement<HTMLButtonElement>('.order__button', this.container)
         this.addressInput = ensureElement<HTMLInputElement>('.form__input', this.container)
         this.errorElement = ensureElement<HTMLElement>('.form__errors', this.container)
+        
 
         this.paymentButtons.forEach((button, index, array) => {
            
-            button.addEventListener('click', () => {
-            // if(button.name === 'cash') {
-            //     array[1].classList.add('button_alt-active')
-            //     array[0].classList.remove('button_alt-active')
-            // } else {
-            //     array[0].classList.add('button_alt-active')
-            //     array[1].classList.remove('button_alt-active')
-            // }
+            button.addEventListener('click', (event) => {
+        
+            const target = event.target as HTMLButtonElement;
+            const targerName = target.name
+            this.events.emit("order:payCategory", {targerName})
+            this.validateForm();
+            
+        })
 
-            switch (button.name) {
+           this.events.on('order:change:button', (item: Order) => {
+                 switch (item.payment) {
                 case 'cash':
                     array[1].classList.add('button_alt-active')
                     array[0].classList.remove('button_alt-active')
@@ -47,52 +50,42 @@ export class OrderModal extends Component<IDataOrder> {
                 break;
             }
 
-            // this.events.on("order:payCategory", data)
-                
-        })
-           
-           
-        })
-        
-        
-      }
-
-      protected paymentBut() {
-        this.paymentButtons.forEach((button, index) => {
-            button.addEventListener('click', () => {
-                button.classList.add('button_alt-active')
+            this.selectedPayment = item.payment
             })
+           
         })
-        // button_alt-active
+        
+         this.addressInput.addEventListener('input', () => {
+            this.validateForm();
+        });
+
+            this.submitButton.addEventListener('click', (event) => {
+            const orderData = {
+                adress: this.addressInput.value.trim()
+            }
+            event.preventDefault()
+            this.events.emit('modal:close');
+            this.events.emit('order:submit', orderData)
+        })
+        
       }
 
-      private validateForm(): void {
-        if (!this.submitButton || !this.addressInput) return;
+    //   protected paymentBut() {
+    //     this.paymentButtons.forEach((button, index) => {
+    //         button.addEventListener('click', () => {
+    //             button.classList.add('button_alt-active')
+    //         })
+    //     })
+    //     // button_alt-active
+    //   }
 
-        const isAddressValid = this.addressInput.value.trim().length > 0;
-        const isPaymentSelected = this.selectedPayment !== null;
-        
-        if (!isPaymentSelected) {
-            this.showError('Выберите способ оплаты');
-            return;
-        }
-
-        if (!isAddressValid) {
-            this.showError('Введите адрес доставки');
-            return;
-        }
-
-        this.hideError();
-        super.setDisabled(this.submitButton, true)
-    }
-
-
-     private showError(message: string): void {
+    private showError(message: string): void {
         if (this.errorElement) {
             this.errorElement.textContent = message;
         }
         if (this.submitButton) {
-            this.submitButton.disabled = true;
+            super.setDisabled(this.submitButton, true)
+            // this.submitButton.disabled = true;
         }
     }
 
@@ -100,13 +93,62 @@ export class OrderModal extends Component<IDataOrder> {
         if (this.errorElement) {
             this.errorElement.textContent = '';
         }
+
+        super.setDisabled(this.submitButton, false)
     }
 
-    //   createOrderModal() {
-        
-    //     // this.form = ensureElement<HTMLFormElement>()
+      private validateForm(): void {
+       
+        // this.events.emit('validate:inspect', this.addressInput);
+        // this.events.emit('validateButton:inspect', this.paymentButtons)
+        const isAddressValid = this.addressInput.value.trim().length > 0;
+        const isPaymentSelected = this.selectedPayment !== undefined;
+        // console.log(isAddressValid)
+        console.log(this.selectedPayment)
+        if (!isPaymentSelected) {
+            this.showError('Выберите способ оплаты');
+            return;
+        }
 
-    //     return this.container
-    //   }
+        // this.events.on('text:noValid', () => {
+        //     this.showError('Введите адрес доставки');
+        //     console.log('hi')
+        //     // return;
+        // })
 
+        // this.events.on('button:noValid', () => {
+        //     this.showError('Выберите способ оплаты');
+        //     console.log('hi2')
+        //     // return;
+        // })
+
+        // this.events.on('button:Valid', () => {
+        //     console.log('hi3')
+        //     // return
+        // })
+
+        //   this.events.on('text:valid', () => {
+        //     console.log('hi4')
+        //     // return
+        // })
+
+        if (!isAddressValid) {
+            this.showError('Введите адрес доставки');
+            return;
+        }
+
+        this.hideError();
+        // super.setDisabled(this.submitButton, true)
+    }
+
+
+     
+
+    closeOrderModal() {
+         this.addressInput.value = ''
+            this.errorElement.textContent = '';
+            this.paymentButtons.forEach((button) => {
+                button.classList.remove('button_alt-active')
+            })
+    }
 }

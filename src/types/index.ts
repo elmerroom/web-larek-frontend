@@ -9,7 +9,7 @@ export interface Product  {
 };
 
 export interface Order  {
-  payment?: 'card' | 'cash';
+  payment?: 'card' | 'cash' | null;
   address?: string;
   email?: string;
   phone?: string;

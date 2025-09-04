@@ -1,5 +1,5 @@
 import { EventEmitter, IEvents } from '../base/events';
-import { Product, AppState, ApiListResponse } from '../../types/index';
+import { Product, AppState, ApiListResponse, Order } from '../../types/index';
 
 
 export class ProductModel {
@@ -9,7 +9,7 @@ export class ProductModel {
   basket: [],
   preview: null,
   order: {
-    payment: undefined,
+    payment:  null,
     address: undefined,
     email: undefined,
     phone: undefined,
@@ -70,10 +70,30 @@ export class ProductModel {
 
   getBasket(): Product[] {
     return this.state.basket
+  };
+
+   getState(): AppState {
+    return this.state;
+  }
+
+  getOrder(): Order {
+    return this.state.order
   }
 
   isInBasket(productId: string): boolean {
     return this.state.basket.some(item => item.id === productId);
+  }
+
+  validateInput(text: string): boolean {
+    return text.length > 0
+  }
+
+  validateButton(buttons: HTMLButtonElement[]): boolean  {
+    const validateBoolean = buttons.some(element => {
+     return element.classList.contains('button_alt-active');
+
+    });
+    return validateBoolean
   }
 
 }
