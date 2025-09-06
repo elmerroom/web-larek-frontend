@@ -4,9 +4,6 @@ import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 
 interface IContctsModal {
-  // validEmail: boolean;
-  // validPhone: boolean;
-  // inputValues: Record<string, string>;
   valid: boolean;
 }
 
@@ -32,13 +29,13 @@ export class ContactsModal extends Component<IContctsModal> {
       const target = event.target as HTMLInputElement;
       const field = target.name;
       const value = target.value;
-      console.log(target , field, value);
       this.events.emit('contacts:input', {field, value})
     })
 
-    this.submitButton.addEventListener('submit', () => {
+    this.container.addEventListener('submit', (event) => {
+      event.preventDefault();
+      this.events.emit('modal:close');
       this.events.emit('contacts:submit');
-      this.events.emit('modal:close')
     })
   }
 
@@ -55,7 +52,6 @@ export class ContactsModal extends Component<IContctsModal> {
   private showError(message: string): void {
         if (this.errorElement) {
             this.errorElement.textContent = message;
-            console.log(this.errorElement.textContent)
         }
         if (this.submitButton) {
             super.setDisabled(this.submitButton, true)
@@ -71,11 +67,10 @@ export class ContactsModal extends Component<IContctsModal> {
     }
 
      closeContactsModal() {
-        this.emailInput.value = ''
         this.errorElement.textContent = '';
-        this.phoneInput.value = ''
-            // this.paymentButtons.forEach((button) => {
-            //     button.classList.remove('button_alt-active')
-            // })
+        this.inputs.forEach((input) => {
+          input.value = ''
+        })
+        this.setDisabled(this.submitButton, true);
     }
 }

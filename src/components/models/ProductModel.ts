@@ -48,6 +48,7 @@ export class ProductModel {
       this.updateBasket();
       this.updatePreviewStatus(product.id);
     }
+    
   }
 
   removeFromBasket(productId: string): void {

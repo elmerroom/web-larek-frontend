@@ -26,9 +26,6 @@ export class PageView extends Component<IPageView> {
     this.basket = ensureElement('.header__basket', this.container) as HTMLButtonElement;
     this.basketCount = ensureElement('.header__basket-counter', this.container);
     
-    // this.basketCount.addEventListener('click', () => console.log('hi'))
-
-
     this.basket.addEventListener('click', () => this.events.emit('basketModal:open'))
   }
 

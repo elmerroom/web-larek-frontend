@@ -8,12 +8,9 @@ export class MarketApi {
 
   constructor(api: IApiMethods, private events: EventEmitter) {
     this.api = api
-    // private cache: 
   }
 
   async getProduct(): Promise<Product[]> {
-    // const response = await this.method.get<ApiListResponse<Product>>('/product');
-    // return response.items
 
     if (this.cache) {
             this.events.emit('products:loaded', this.cache);

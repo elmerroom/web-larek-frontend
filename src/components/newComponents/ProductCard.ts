@@ -61,9 +61,4 @@ export class ProductCard extends Component<Product> {
     this.setImage(this.itemImg, `${CDN_URL}${value}`
     )
   }
-
-  // render(data: Partial<Product>): HTMLElement {
-  //   Object.assign(this as object, data)
-  //   return this.container
-  // }
 }

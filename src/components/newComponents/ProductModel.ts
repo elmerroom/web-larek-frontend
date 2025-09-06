@@ -4,7 +4,6 @@ import { isEmpty } from '../../utils/utils';
 
 
 export class ProductModel {
-  // private events: EventEmitter;
   state: AppState = {
   catalog: [],
   basket: [],
@@ -20,10 +19,7 @@ export class ProductModel {
 };
   protected products: Product[] = []
 
-  constructor(protected events: IEvents) {
-
-    // вызов в конструкторе класса других классов является не верным решением, нужно пересмотреть дипсик и реализацию этого класса, также обратить внимание на интерфейс IApiMethods и класс MarketApi
-    
+  constructor(protected events: IEvents) {   
     this.events = events;
   }
 
@@ -32,12 +28,15 @@ export class ProductModel {
       this.state.basket.push(product);
     }
     this.events.emit('basket:changed')
+
+    this.state.order.items = this.state.basket.map(product => product.id)
     return this.state.basket
   }
 
   removeFromBasket(productId: string) {
     this.state.basket = this.state.basket.filter(item => item.id !== productId);
-    this.events.emit('basket:changed')
+    this.events.emit('basket:changed');
+    this.state.order.items = this.state.basket.map(product => product.id)
   }
 
   getProducts(): Product[] {
@@ -64,6 +63,17 @@ export class ProductModel {
     this.state.basket = [];
   }
 
+  clearOrder() {
+    this.state.order = {
+      payment:  undefined,
+    address: null,
+    email: undefined,
+    phone: undefined,
+    items: [],
+    total: 0
+    }
+  }
+
   setProducts(products: Product[]) {
     this.state.catalog = products
     this.events.emit('product:changed')
@@ -85,38 +95,10 @@ export class ProductModel {
     return this.state.basket.some(item => item.id === productId);
   }
 
-  validateInput(text: string): boolean {
-    // if (text.length === 0) {
-    //   return false
-    // }
-    // console.log(text.length > 0)
+  validateInputs(): boolean {
     const email: string | undefined = this.state.order.email;
     const phone: string | undefined = this.state.order.phone
     return !!email && email.length > 0 && !!phone && phone.length > 0
-  }
-
-  validateButton(buttons: HTMLButtonElement[]): boolean  {
-    const validateBoolean = buttons.some(element => {
-     return element.classList.contains('button_alt-active');
-
-    });
-    return validateBoolean
-  }
-
-  validateAdress(value: string): boolean {
-    this.state.order.address = value
-    const adress = this.state.order.address;
-    
-    // if (adress === null || adress === undefined || adress.length < 0 || adress === '') {
-    //   return false
-    // }
-
-    // return true
-    if (adress.length > 0) {
-      return true
-    }
-
-    return false
   }
 
   setAdress(value:string) {
@@ -145,5 +127,4 @@ export class ProductModel {
     }
     return
   }
-
 }

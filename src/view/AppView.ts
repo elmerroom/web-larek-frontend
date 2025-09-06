@@ -16,7 +16,6 @@ export class AppView {
     events.on('products:loaded', (products: Product[]) => {
       this.cachedProducts = products
       this.renderProducts();
-      // console.log('olala')
     });
   }
 
@@ -31,9 +30,6 @@ export class AppView {
         this.cachedProducts.forEach(product => {
             const card = new ProductCard(product, this.events);
             this.productContainer.appendChild(card.getElement());
-            // card.getElement().addEventListener('click', (event) => {
-            //   this.modal.content
-            // })
         });
     }
 

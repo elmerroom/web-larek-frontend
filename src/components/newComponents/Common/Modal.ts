@@ -44,6 +44,8 @@ export class Modal<T> extends Component<T> {
        this.pageWrapper.classList.remove('page__wrapper_locked')
        this.content = null
     }
+
+  
   
     handleEscUp (evt: KeyboardEvent) {
         if (evt.key === "Escape") {

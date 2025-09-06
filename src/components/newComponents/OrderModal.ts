@@ -16,12 +16,15 @@ export class OrderModal extends Component<IDataOrder> {
     protected addressInput: HTMLInputElement;
     protected errorElement: HTMLElement;
     protected selectedPayment: 'card' | 'cash' | null;
-    protected _validData: boolean = false;  // Инициализируем false по умолчанию
-    protected _validButton: boolean = false;
+    protected _validData: boolean;
+    protected _validButton: boolean ;
 
   constructor(container: HTMLElement, events: IEvents) {
           super(container);
           this.events = events;
+
+          this._validData = false;
+          this._validButton = false;
           
         this._form = this.container.querySelector('.form') as HTMLFormElement
         this.paymentButtons = ensureAllElements<HTMLButtonElement>('.button_alt', this.container)
@@ -38,7 +41,6 @@ export class OrderModal extends Component<IDataOrder> {
             const targerName = target.name
             this.events.emit("order:payCategory", {targerName})
             this.events.emit('validate:inspect', this.addressInput)
-            console.log("проверка",true && true)
         })
 
            this.events.on('order:change:button', (item: Order) => {
@@ -71,6 +73,7 @@ export class OrderModal extends Component<IDataOrder> {
             event.preventDefault()
             this.events.emit('modal:close');
             this.events.emit('order:submit', orderData)
+            this.events.emit("form:reset", this.container)
         })
         
       }
@@ -109,7 +112,6 @@ export class OrderModal extends Component<IDataOrder> {
         }
         if (this.submitButton) {
             super.setDisabled(this.submitButton, true)
-            // this.submitButton.disabled = true;
         }
     }
 
@@ -122,10 +124,11 @@ export class OrderModal extends Component<IDataOrder> {
     }
    
     closeOrderModal() {
-         this.addressInput.value = ''
-            this.errorElement.textContent = '';
-            this.paymentButtons.forEach((button) => {
-                button.classList.remove('button_alt-active')
-            })
+        this.addressInput.value = ''
+        this.errorElement.textContent = '';
+        this.paymentButtons.forEach((button) => {
+            button.classList.remove('button_alt-active')
+        })
+        super.setDisabled(this.submitButton, true)
     }
 }
