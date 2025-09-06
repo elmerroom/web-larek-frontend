@@ -72,18 +72,6 @@ yarn build
 - Нет единого контроллера; вместо этого — promise-based flow для API (async/await в `index.ts`) и события для UI-логики. Цикл: Пользователь → View → Event → Model/Data → Event → View.
 - Пример: Клик на карточку → 'productModal:open' → Model проверяет состояние → View рендерит модалку.
 
-```mermaid
-graph TD
-    A[User Actions] --> B[View Layer<br/>(PageView, Modals)]
-    B --> C[Events Layer<br/>(EventEmitter)]
-    C --> D[Model Layer<br/>(ProductModel)]
-    D --> E[Data Layer<br/>(MarketApi, Api)]
-    E -->|API Calls| F[Server]
-    F --> E
-    E --> C
-    C --> B
-    D --> C
-```
 
 ### Базовые классы
 ------ 
@@ -98,7 +86,7 @@ graph TD
 
 ### Api
 
-РБазовый класс для работы с API. Обеспечивает:
+Базовый класс для работы с API. Обеспечивает:
 
 - GET/POST запросы.
 - Обработку ответов.
@@ -214,19 +202,6 @@ graph TD
 - Нет единого контроллера; вместо этого — promise-based flow для API (async/await в `index.ts`) и события для UI-логики. Цикл: Пользователь → View → Event → Model/Data → Event → View.
 - Пример: Клик на карточку → 'productModal:open' → Model проверяет состояние → View рендерит модалку.
 
-```mermaid
-graph TD
-    A[User Actions] --> B[View Layer<br/>(PageView, Modals)]
-    B --> C[Events Layer<br/>(EventEmitter)]
-    C --> D[Model Layer<br/>(ProductModel)]
-    D --> E[Data Layer<br/>(MarketApi, Api)]
-    E -->|API Calls| F[Server]
-    F --> E
-    E --> C
-    C --> B
-    D --> C
-```
-
 ## Компоненты приложения
 Приложение состоит из базовых классов, моделей и view-компонентов. Каждый класс — на одном слое, следует SRP: View — только рендеринг/DOM, Model — состояние (без API-запросов), Data — сетевые операции (без хранения UI-логики).
 
@@ -328,5 +303,3 @@ graph TD
 Это обеспечивает реактивность: изменения в Model автоматически обновляют View через события, без прямых ссылок между компонентами.
 
 Ссылка на работу: [https://github.com/elmerroom/web-larek-frontend/tree/main]
-
-https://github.com/elmerroom/web-larek-frontend/tree/main
