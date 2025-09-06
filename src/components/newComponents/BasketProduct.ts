@@ -22,7 +22,7 @@ export class BasketProduct extends Component<Product> {
     this.itemPrice = ensureElement('.card__price', this.container);
     this.delateButton = ensureElement('.basket__item-delete', this.container) as HTMLButtonElement;
 
-    this.delateButton.addEventListener('click', () => this.events.emit('basket:remove', product))
+    this.delateButton.addEventListener('click', () => this.events.emit('basket:removeProduct', product))
   }
 
   set title(value: string) {

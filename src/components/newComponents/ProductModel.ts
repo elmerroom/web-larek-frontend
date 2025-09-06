@@ -1,5 +1,6 @@
 import { EventEmitter, IEvents } from '../base/events';
 import { Product, AppState, ApiListResponse, Order } from '../../types/index';
+import { isEmpty } from '../../utils/utils';
 
 
 export class ProductModel {
@@ -9,8 +10,8 @@ export class ProductModel {
   basket: [],
   preview: null,
   order: {
-    payment:  null,
-    address: undefined,
+    payment:  undefined,
+    address: null,
     email: undefined,
     phone: undefined,
     items: [],
@@ -30,13 +31,13 @@ export class ProductModel {
     if (!this.state.basket.some(item => item.id === product.id)) {
       this.state.basket.push(product);
     }
-    this.events.emit('product:changed')
+    this.events.emit('basket:changed')
     return this.state.basket
   }
 
   removeFromBasket(productId: string) {
     this.state.basket = this.state.basket.filter(item => item.id !== productId);
-    this.events.emit('product:changed')
+    this.events.emit('basket:changed')
   }
 
   getProducts(): Product[] {
@@ -59,7 +60,7 @@ export class ProductModel {
   }
 
   clearBasket() {
-    this.events.emit('product:changed')
+    this.events.emit('basket:changed')
     this.state.basket = [];
   }
 
@@ -85,7 +86,13 @@ export class ProductModel {
   }
 
   validateInput(text: string): boolean {
-    return text.length > 0
+    // if (text.length === 0) {
+    //   return false
+    // }
+    // console.log(text.length > 0)
+    const email: string | undefined = this.state.order.email;
+    const phone: string | undefined = this.state.order.phone
+    return !!email && email.length > 0 && !!phone && phone.length > 0
   }
 
   validateButton(buttons: HTMLButtonElement[]): boolean  {
@@ -94,6 +101,49 @@ export class ProductModel {
 
     });
     return validateBoolean
+  }
+
+  validateAdress(value: string): boolean {
+    this.state.order.address = value
+    const adress = this.state.order.address;
+    
+    // if (adress === null || adress === undefined || adress.length < 0 || adress === '') {
+    //   return false
+    // }
+
+    // return true
+    if (adress.length > 0) {
+      return true
+    }
+
+    return false
+  }
+
+  setAdress(value:string) {
+    this.state.order.address = value
+  }
+
+  getValidAdress():boolean {
+    const adress: string | undefined = this.state.order.address;  // Уточните тип для ясности
+    return !!adress && adress.length > 0;
+  }
+
+  getValidButtons(): boolean {
+    const payment = this.state.order.payment
+    return (payment === 'card' || payment === 'cash')
+  }
+
+  setContacts(name: string, value: string) {
+    if (name === "email") {
+      this.state.order.email = value
+      // const email = this.state.order.email
+      return
+    }
+    if (name === "phone") {
+      this.state.order.phone = value
+      return
+    }
+    return
   }
 
 }

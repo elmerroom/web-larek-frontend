@@ -158,7 +158,7 @@ import { API_URL } from './utils/constants';
 import { Api } from './components/base/api';
 import { ProductModel } from './components/newComponents/ProductModel';
 import { ProductCard } from './components/newComponents/ProductCard';
-import { cloneTemplate } from './utils/utils';
+import { cloneTemplate, ensureElement } from './utils/utils';
 import { PageView } from './components/newComponents/PageView';
 import { ProductModal } from './components/newComponents/ProductModal';
 import { AppState, Order, Product } from './types';
@@ -166,6 +166,7 @@ import { Modal } from './components/newComponents/Common/Modal';
 import { BasketModal } from './components/newComponents/BasketModal';
 import { BasketProduct } from './components/newComponents/BasketProduct';
 import { OrderModal } from './components/newComponents/OrderModal';
+import { ContactsModal } from './components/newComponents/ContactsModal';
 
 
 const events = new EventEmitter()
@@ -179,21 +180,27 @@ const marketApi = new MarketApi(api, events)
 
 const productModel = new ProductModel(events)
 
-const peoductTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
+const modal = new Modal(document.querySelector('#modal-container'), events)
+
+const productTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
+const productPrivewTemplate = document.querySelector('#card-preview') as HTMLTemplateElement;
 
 const basketTemplate = document.querySelector('#basket') as HTMLTemplateElement;
 
 const basketCardTemplate = document.querySelector('#card-basket') as HTMLTemplateElement;
 
 const orderTemplate = document.querySelector('#order') as HTMLTemplateElement;
+// const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
+const contactsTemplate = document.querySelector('#contacts') as HTMLTemplateElement;
 
-const modal = new Modal(document.querySelector('#modal-container'), events)
+
 
 const modalConteiner = document.querySelector('#card-preview') as HTMLTemplateElement;
 
-const productModal = new ProductModal(events)
+// const productModal = new ProductModal(cloneTemplate(productPrivewTemplate),events, product)
 const basketModal = new BasketModal(cloneTemplate(basketTemplate), events)
-const orderModal = new OrderModal(cloneTemplate(orderTemplate), events)
+const orderModal = new OrderModal(cloneTemplate(orderTemplate), events);
+const contactsModal = new ContactsModal(cloneTemplate(contactsTemplate), events)
 
 
 console.log(productModel)
@@ -222,11 +229,18 @@ productModel.setProducts(data)
 events.on('product:changed', () => {
   console.log('product:changed')
   const ProductHTMLArray = productModel.getProducts().map(product => 
-    new ProductCard(cloneTemplate(peoductTemplate), events, product).render(product)
+    new ProductCard(cloneTemplate(productTemplate), events, product).render(product)
   )
 
   page.render({
     productList: ProductHTMLArray,
+    count: productModel.getTotal()
+  })
+})
+
+ events.on('basket:changed', (product: Product) => {
+    page.render({
+    // productList: ProductHTMLArray,
     count: productModel.getTotal()
   })
 
@@ -235,25 +249,44 @@ events.on('product:changed', () => {
 
     basketProduct.index = String(index + 1);
     return basketProduct.render(product)
-  }
-  )
-
-  // ItemBasketHTMLArray.
+  })
 
   basketModal.render({
     basketListItem: ItemBasketHTMLArray,
     orderTotalPrice: productModel.updateOrderTotal()
   })
+  })
 
-  // modal.render()
+events.on('productModal:rerender', (product: Product) => {
+  modal.close()
+  const inBasket = productModel.isInBasket(product.id)
+  const productModal = new ProductModal(cloneTemplate(productPrivewTemplate),events, product).render({
+    id: product.id,
+  title: product.title,
+  description: product.description,
+  price: product.price,
+  category: product.category,
+  image: product.image,
+  inBasket: inBasket
+    })
+  modal.open(productModal)
 })
 
 events.on('productModal:open', (product: Product) => {
   console.log("productModal:open")
   // modal.content = productModal.createProductContent(product)
-  const inBasket = productModel.isInBasket(product.id)
-  modal.open(productModal.createProductContent(product, inBasket))
-  
+  // const inBasket = productModel.isInBasket(product.id)
+  // const productModal = new ProductModal(cloneTemplate(productPrivewTemplate),events, product).render({
+  //   id: product.id,
+  // title: product.title,
+  // description: product.description,
+  // price: product.price,
+  // category: product.category,
+  // image: product.image,
+  // inBasket: inBasket
+  //   })
+  // modal.open(productModal)
+  events.emit('productModal:rerender', product)
 })
 
 events.on('basketModal:open', () => {
@@ -272,29 +305,55 @@ events.on('orderModal:open', () => {
 
 events.on('product:add', (product: Product) => {
   productModel.addToBasket(product);
-  // modal.close()
+  modal.close()
+  const productModal = new ProductModal(cloneTemplate(productPrivewTemplate),events, product).render({
+     id: product.id,
+    title: product.title,
+    description: product.description,
+    price: product.price,
+    category: product.category,
+    image: product.image,
+    inBasket: productModel.isInBasket(product.id)}
+  )
+  modal.open(productModal)
+  
   console.log('product:add');
 });
 
-events.on('basket:remove', (product: Product) => {
+events.on('basket:removeProduct', (product: Product) => {
   // const basket = productModel.getBasket()
   productModel.removeFromBasket(product.id);
   console.log('basket:remove')
+  // events.emit('productModal:rerender', product)
+  modal.close()
+  const basketItems = productModel.getBasket()
+  modal.open(basketModal.createBasketModal(basketItems))
+});
+
+events.on('product:removeProduct', (product: Product) => {
+  // const basket = productModel.getBasket()
+  productModel.removeFromBasket(product.id);
+  console.log('basket:remove')
+  events.emit('productModal:rerender', product)
   
 });
+
+
 
 events.on('modal:close', () => {
   modal.close()
   console.log('modal:close')
+  orderModal.closeOrderModal()
+  contactsModal.closeContactsModal()
 })
 
 events.on('order:payCategory', (item) => {
   console.log('order:payCategory')
-  const [...category] = Object.values(item)
-  const values = [...category]
+  const category = Object.values(item)
+  const [values] = [...category]
   // console.log(Object.values(item))
-  // console.log(values[0])
-  productModel.getState().order.payment = values[0]
+  // console.log(values)
+  productModel.getState().order.payment = values
   // console.log(productModel.getState())
 
   events.emit('order:change:button', productModel.getOrder())
@@ -302,26 +361,44 @@ events.on('order:payCategory', (item) => {
 }) 
 
 events.on('order:submit', (data: Order) => {
-  const orderAdress = data.address
+  // const orderAdress = data.address
   orderModal.closeOrderModal()
-  productModel.state.order.address = orderAdress
-  console.log(productModel.getOrder())
+  // productModel.state.order.address = orderAdress
+  // console.log(productModel.getOrder());
+  modal.open(contactsModal.render())
 })
 
 events.on('validate:inspect', (text: HTMLInputElement) => {
-  const isValid = productModel.validateInput(text.value)
-  if (isValid) {
-    events.emit('text:valid')
-  } else {
-    events.emit('text:noValid')
-  }
+  productModel.setAdress(text.value)
+  // productModel.validateInput(text.value)
+  // console.log(productModel.getValidAdress(), productModel.getValidButtons())
+  // const isValid = productModel.validateAdress(text.value)
+orderModal.render({
+  validData: productModel.getValidAdress(),
+  validButton: productModel.getValidButtons()
+})
 })
 
 events.on('validateButton:inspect', (buttons: HTMLButtonElement[]) => {
-  const isValid = productModel.validateButton(buttons)
-  if (isValid) {
-    events.emit('button:valid')
-  } else {
-    events.emit('button:noValid')
-  }
+// productModel.validateButton(buttons)
+// console.log(productModel.getValidAdress(), productModel.getValidButtons())
+  orderModal.render({
+    validData: productModel.getValidAdress(),
+  validButton: productModel.getValidButtons()
+  })
+})
+
+events.on('contacts:input', (data: {
+  field: string;
+  value: string
+}) => {
+  productModel.setContacts(data.field, data.value)
+  const isValid = productModel.validateInput(data.value)
+  contactsModal.render({
+    valid: isValid
+  })
+})
+
+events.on("contacts:submit", () => {
+  contactsModal.closeContactsModal()
 })

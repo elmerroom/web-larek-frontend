@@ -4,7 +4,8 @@ import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 
 interface IDataOrder {
-    data: HTMLElement
+    validData: boolean;
+    validButton: boolean;
 }
 
 export class OrderModal extends Component<IDataOrder> {
@@ -15,12 +16,14 @@ export class OrderModal extends Component<IDataOrder> {
     protected addressInput: HTMLInputElement;
     protected errorElement: HTMLElement;
     protected selectedPayment: 'card' | 'cash' | null;
+    protected _validData: boolean = false;  // Инициализируем false по умолчанию
+    protected _validButton: boolean = false;
 
   constructor(container: HTMLElement, events: IEvents) {
           super(container);
           this.events = events;
           
-        this._form = ensureElement<HTMLFormElement>('.order', this.container)
+        this._form = this.container.querySelector('.form') as HTMLFormElement
         this.paymentButtons = ensureAllElements<HTMLButtonElement>('.button_alt', this.container)
         this.submitButton = ensureElement<HTMLButtonElement>('.order__button', this.container)
         this.addressInput = ensureElement<HTMLInputElement>('.form__input', this.container)
@@ -34,8 +37,8 @@ export class OrderModal extends Component<IDataOrder> {
             const target = event.target as HTMLButtonElement;
             const targerName = target.name
             this.events.emit("order:payCategory", {targerName})
-            this.validateForm();
-            
+            this.events.emit('validate:inspect', this.addressInput)
+            console.log("проверка",true && true)
         })
 
            this.events.on('order:change:button', (item: Order) => {
@@ -55,8 +58,10 @@ export class OrderModal extends Component<IDataOrder> {
            
         })
         
-         this.addressInput.addEventListener('input', () => {
-            this.validateForm();
+         this.addressInput.addEventListener('input', (event) => {
+            const target = event.target as HTMLInputElement;
+            this.events.emit('validate:inspect', target);
+            this.events.emit('validateButton:inspect');
         });
 
             this.submitButton.addEventListener('click', (event) => {
@@ -70,14 +75,33 @@ export class OrderModal extends Component<IDataOrder> {
         
       }
 
-    //   protected paymentBut() {
-    //     this.paymentButtons.forEach((button, index) => {
-    //         button.addEventListener('click', () => {
-    //             button.classList.add('button_alt-active')
-    //         })
-    //     })
-    //     // button_alt-active
-    //   }
+    set validData(value: boolean) {
+        this._validData = value;
+        this._validateForm();
+    }
+
+    set validButton(value: boolean) {
+        this._validButton = value;
+        this._validateForm();  
+    }
+
+
+    private _validateForm(): void {
+    if (!this._validData) {
+        this.showError('Введите адрес доставки');
+        super.setDisabled(this.submitButton, true);
+        return;
+    }
+
+    if (!this._validButton) {
+        this.showError('Выберите способ оплаты');
+        super.setDisabled(this.submitButton, true);
+        return;
+    }
+
+    this.hideError();
+    super.setDisabled(this.submitButton, false);
+}
 
     private showError(message: string): void {
         if (this.errorElement) {
@@ -96,54 +120,7 @@ export class OrderModal extends Component<IDataOrder> {
 
         super.setDisabled(this.submitButton, false)
     }
-
-      private validateForm(): void {
-       
-        // this.events.emit('validate:inspect', this.addressInput);
-        // this.events.emit('validateButton:inspect', this.paymentButtons)
-        const isAddressValid = this.addressInput.value.trim().length > 0;
-        const isPaymentSelected = this.selectedPayment !== undefined;
-        // console.log(isAddressValid)
-        console.log(this.selectedPayment)
-        if (!isPaymentSelected) {
-            this.showError('Выберите способ оплаты');
-            return;
-        }
-
-        // this.events.on('text:noValid', () => {
-        //     this.showError('Введите адрес доставки');
-        //     console.log('hi')
-        //     // return;
-        // })
-
-        // this.events.on('button:noValid', () => {
-        //     this.showError('Выберите способ оплаты');
-        //     console.log('hi2')
-        //     // return;
-        // })
-
-        // this.events.on('button:Valid', () => {
-        //     console.log('hi3')
-        //     // return
-        // })
-
-        //   this.events.on('text:valid', () => {
-        //     console.log('hi4')
-        //     // return
-        // })
-
-        if (!isAddressValid) {
-            this.showError('Введите адрес доставки');
-            return;
-        }
-
-        this.hideError();
-        // super.setDisabled(this.submitButton, true)
-    }
-
-
-     
-
+   
     closeOrderModal() {
          this.addressInput.value = ''
             this.errorElement.textContent = '';
