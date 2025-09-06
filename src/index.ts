@@ -1,20 +1,20 @@
 import './scss/styles.scss';
-import { MarketApi } from './components/newComponents/ProductApi';
+import { MarketApi } from './components/ProductApi';
 import { EventEmitter } from './components/base/events';
 import { API_URL } from './utils/constants';
 import { Api } from './components/base/api';
-import { ProductModel } from './components/newComponents/ProductModel';
-import { ProductCard } from './components/newComponents/ProductCard';
+import { ProductModel } from './components/models/ProductModel';
+import { ProductCard } from './components/View/ProductCard';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { PageView } from './components/newComponents/PageView';
-import { ProductModal } from './components/newComponents/ProductModal';
+import { PageView } from './components/View/PageView';
+import { ProductModal } from './components/View/ProductModal';
 import { Product } from './types';
-import { Modal } from './components/newComponents/Common/Modal';
-import { BasketModal } from './components/newComponents/BasketModal';
-import { BasketProduct } from './components/newComponents/BasketProduct';
-import { OrderModal } from './components/newComponents/OrderModal';
-import { ContactsModal } from './components/newComponents/ContactsModal';
-import { SuccessModal } from './components/newComponents/SuccessModal';
+import { Modal } from './components/Common/Modal';
+import { BasketModal } from './components/View/BasketModal';
+import { BasketProduct } from './components/View/BasketProduct';
+import { OrderModal } from './components/View/OrderModal';
+import { ContactsModal } from './components/View/ContactsModal';
+import { SuccessModal } from './components/View/SuccessModal';
 
 
 const events = new EventEmitter()

@@ -1,5 +1,5 @@
-import { Product, Order, OrderSuccess, AppState, IApiMethods, ApiListResponse } from '../../types/index';
-import { EventEmitter } from '../base/events';
+import { Product, Order, IApiMethods, ApiListResponse } from '../types/index';
+import { EventEmitter } from './base/events';
 
 export class MarketApi {
 

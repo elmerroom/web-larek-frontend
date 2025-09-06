@@ -1,5 +1,4 @@
-import { ApiPostMethods } from './../components/base/api';
-export interface Product  {
+export type Product =  {
   id: string;
   title: string;
   description: string;
@@ -8,7 +7,7 @@ export interface Product  {
   image: string;
 };
 
-export interface Order  {
+export type Order = {
   payment?: 'card' | 'cash' | null;
   address?: string;
   email?: string;
@@ -22,19 +21,12 @@ export interface ApiListResponse<T>  {
     items: T[]
 };
 
-export interface AppState  {
+export type AppState = {
   catalog: Product[];
   basket: Product[];
   preview: Product | null;
   order: Order;
 };
-
-
-
-export interface OrderSuccess {
-  id: string;
-  total : number;
-}
 
 export interface IApiMethods {
   get<T>(uri: string): Promise<T>;

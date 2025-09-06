@@ -1,8 +1,7 @@
 import { IEvents } from "../base/events";
-import { Modal } from "../newComponents/Common/Modal";
 import { Product } from "../../types";
 import { Component } from "../base/Component";
-import { cloneTemplate, ensureElement } from "../../utils/utils";
+import { ensureElement } from "../../utils/utils";
 import { CDN_URL } from "../../utils/constants";
 
 

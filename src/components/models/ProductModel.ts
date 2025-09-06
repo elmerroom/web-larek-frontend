@@ -1,101 +1,130 @@
-import { Api } from '../base/api';
-import { EventEmitter } from '../base/events';
-import { Product, AppState, ApiListResponse } from '../../types/index';
-import { API_URL } from '../../utils/constants';
-import { MarketApi } from '../MarketApi';
+import { IEvents } from '../base/events';
+import { Product, AppState, Order } from '../../types/index';
+
 
 
 export class ProductModel {
-  private events: EventEmitter;
-  state: AppState;
-  marketApi: MarketApi
+  state: AppState = {
+  catalog: [],
+  basket: [],
+  preview: null,
+  order: {
+    payment:  undefined,
+    address: null,
+    email: undefined,
+    phone: undefined,
+    items: [],
+    total: 0
+  }
+};
+  protected products: Product[] = []
 
-  constructor(events: EventEmitter, initialState: AppState) {
-
-    // вызов в конструкторе класса других классов является не верным решением, нужно пересмотреть дипсик и реализацию этого класса, также обратить внимание на интерфейс IApiMethods и класс MarketApi
-    
+  constructor(protected events: IEvents) {   
     this.events = events;
-    this.state = initialState
   }
 
-  async loadProducts(): Promise<void> {
-    try {
-      // const response = await this.api.get('/product');
-      // console.log("response",  response)
-      // const response2: ApiListResponse<Product> = await this.marketApi.getProduct()
-      // console.log("response2", response2)
-      // this.state.catalog = response2.items
-
-
-
-      // this.state.catalog = (response as ApiListResponse<Product>).items;
-      
-      // this.state.catalog = (response2 as ApiListResponse<Product>).items
-      
-      // await this.marketApi.getProduct()
-      // const result = this.state.catalog
-      
-      this.events.emit('products:loaded', this.state.catalog);
-      // console.log(result[0])
-    } catch (error) {
-      this.events.emit('product:error', error);
-    }
-  }
-
-  addToBasket(product: Product): void {
+  addToBasket(product: Product): Product[] {
     if (!this.state.basket.some(item => item.id === product.id)) {
       this.state.basket.push(product);
-      this.updateBasket();
-      this.updatePreviewStatus(product.id);
     }
-    
+    this.events.emit('basket:changed')
+
+    this.state.order.items = this.state.basket.map(product => product.id)
+    return this.state.basket
   }
 
-  removeFromBasket(productId: string): void {
+  removeFromBasket(productId: string) {
     this.state.basket = this.state.basket.filter(item => item.id !== productId);
-    this.updateBasket();
-    this.updatePreviewStatus(productId);
+    this.events.emit('basket:changed');
+    this.state.order.items = this.state.basket.map(product => product.id)
   }
 
-  private updateBasket(): void {
-    this.events.emit('basket:changed', this.state.basket);
-    this.updateOrderTotal();
+  getProducts(): Product[] {
+    return this.state.catalog
   }
 
-  private updateOrderTotal(): void {
-  this.state.order.total = this.state.basket.reduce(
+  getProduct(id: string): Product {
+    return this.state.catalog.find(item => item.id === id)
+  }
+
+  getTotal() {
+    return this.state.basket.length
+  }
+
+  updateOrderTotal(): number {
+    this.state.order.total = this.state.basket.reduce(
         (sum, item) => sum + (item.price || 0), 0
     );
-    this.events.emit('order:total', { total: this.state.order.total });
+    return this.state.order.total
   }
 
-  setPreview(product: Product): void {
-    this.state.preview = product;
-    const inBasket = this.state.basket.some(item => item.id === product.id);
-    this.events.emit('product:preview', { product, inBasket });
+  clearBasket() {
+    this.events.emit('basket:changed')
+    this.state.basket = [];
   }
 
-  private updatePreviewStatus(productId: string): void {
-    if (this.state.preview && this.state.preview.id === productId) {
-      const inBasket = this.state.basket.some(item => item.id === productId);
-      this.events.emit('product:preview:update', { 
-        productId, 
-        inBasket 
-      });
+  clearOrder() {
+    this.state.order = {
+      payment:  undefined,
+    address: null,
+    email: undefined,
+    phone: undefined,
+    items: [],
+    total: 0
     }
   }
 
-  getState(): AppState {
+  setProducts(products: Product[]) {
+    this.state.catalog = products
+    this.events.emit('product:changed')
+  }
+
+  getBasket(): Product[] {
+    return this.state.basket
+  };
+
+   getState(): AppState {
     return this.state;
   }
 
-  clearBasket(): void {
-    this.state.basket = [];
-    this.updateOrderTotal();
-    this.events.emit('basket:changed', this.state.basket);
+  getOrder(): Order {
+    return this.state.order
   }
 
   isInBasket(productId: string): boolean {
     return this.state.basket.some(item => item.id === productId);
+  }
+
+  validateInputs(): boolean {
+    const email: string | undefined = this.state.order.email;
+    const phone: string | undefined = this.state.order.phone
+    return !!email && email.length > 0 && !!phone && phone.length > 0
+  }
+
+  setAdress(value:string) {
+    this.state.order.address = value
+  }
+
+  getValidAdress():boolean {
+    const adress: string | undefined = this.state.order.address;  // Уточните тип для ясности
+    return !!adress && adress.length > 0;
+  }
+
+  getValidButtons(): boolean {
+    const payment = this.state.order.payment
+    return (payment === 'card' || payment === 'cash')
+  }
+
+  setContacts(name: string, value: string) {
+    if (name === "email") {
+      this.state.order.email = value
+      // const email = this.state.order.email
+      return
+    }
+    if (name === "phone") {
+      this.state.order.phone = value
+      return
+    }
+    return
   }
 }
