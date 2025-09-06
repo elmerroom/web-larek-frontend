@@ -1,5 +1,5 @@
 import './scss/styles.scss';
-import { MarketApi } from './components/ProductApi';
+import { MarketApi } from './components/models/ProductApi';
 import { EventEmitter } from './components/base/events';
 import { API_URL } from './utils/constants';
 import { Api } from './components/base/api';
@@ -208,7 +208,7 @@ events.on('order:reset', () => {
 })
 
 events.on('contacts:submit', () => {
-  api.post('/order', productModel.getOrder())
+  marketApi.buyProduct(productModel.getOrder())
   .then(() => {
     events.emit('order:success')
   })
