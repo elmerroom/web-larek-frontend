@@ -1,16 +1,16 @@
-import { Product, Order, IApiMethods, ApiListResponse } from '../../types/index';
+import { IProduct, IOrder, IApiMethods, ApiListResponse } from '../../types/index';
 import { EventEmitter } from '../base/events';
 
 export class MarketApi {
 
   api: IApiMethods;
-  private cache: Product[] | null;
+  private cache: IProduct[] | null;
 
   constructor(api: IApiMethods, private events: EventEmitter) {
     this.api = api
   }
 
-  async getProduct(): Promise<Product[]> {
+  async getProduct(): Promise<IProduct[]> {
 
     if (this.cache) {
             return this.cache;
@@ -18,7 +18,7 @@ export class MarketApi {
 
         try {
             // Загружаем данные с сервера
-            const response = await this.api.get<ApiListResponse<Product>>('/product');
+            const response = await this.api.get<ApiListResponse<IProduct>>('/product');
             this.cache = response.items;
             return this.cache;
         } catch (error) {
@@ -26,7 +26,7 @@ export class MarketApi {
         }
   }
 
-  buyProduct<T>(order: Order): Promise<T> {
+  buyProduct<T>(order: IOrder): Promise<T> {
     return this.api.post<T>('/order', order, 'POST')
   }
 }

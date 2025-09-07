@@ -1,4 +1,4 @@
-import { Product } from "../../types";
+import { IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
@@ -26,7 +26,7 @@ export class Basket extends Component<IBasket> {
     this.totalPrice = ensureElement<HTMLElement>('.basket__price', this.container)
   }
 
-  createBasketModal(basketItems: Product[]) {
+  createBasketModal(basketItems: IProduct[]) {
     const emptyMessage = this.createEmptyMessage()
 
     if (basketItems.length === 0) {

@@ -1,4 +1,4 @@
-import { Product } from "../../types";
+import { IProduct } from "../../types";
 import { CDN_URL } from "../../utils/constants";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
@@ -15,7 +15,7 @@ export class ProductCard extends ProductComponent {
   protected events: IEvents;
   // protected product: Product;
 
-  constructor(container: HTMLElement, events: IEvents, product: Product) {
+  constructor(container: HTMLElement, events: IEvents, product: IProduct) {
     super(container, product);
     this.events = events;
     // this.product = product
@@ -24,7 +24,10 @@ export class ProductCard extends ProductComponent {
     // this.itemPrice = ensureElement('.card__price', this.container);
     this.itemImg = ensureElement('.card__image', this.container) as HTMLImageElement;
 
-    this.container.addEventListener('click', () => this.events.emit('productModal:open',  this.product))
+    this.container.addEventListener('click', () => {
+      this.events.emit('productModal:open',  this.product);
+      console.log(this.product)
+    })
   }
 
   set category(value: string) {

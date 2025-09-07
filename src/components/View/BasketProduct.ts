@@ -1,4 +1,4 @@
-import { Product } from "../../types";
+import { IProduct } from "../../types";
 import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
@@ -14,7 +14,7 @@ export class BasketProduct extends ProductComponent {
   protected delateButton: HTMLButtonElement;
 
 
-  constructor(container: HTMLElement, events: IEvents, product: Product) {
+  constructor(container: HTMLElement, events: IEvents, product: IProduct) {
     super(container, product);
     this.events = events;
     // this.product = product;

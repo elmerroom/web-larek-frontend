@@ -1,4 +1,4 @@
-export type Product =  {
+export interface IProduct   {
   id: string;
   title: string;
   description: string;
@@ -7,7 +7,7 @@ export type Product =  {
   image: string;
 };
 
-export type Order = {
+export interface IOrder  {
   payment?: 'card' | 'cash' | null;
   address?: string;
   email?: string;
@@ -21,17 +21,37 @@ export interface ApiListResponse<T>  {
     items: T[]
 };
 
-export type AppState = {
-  catalog: Product[];
-  basket: Product[];
-  preview: Product | null;
-  order: Order;
+export interface IOrderForm {
+    payment?: 'card' | 'cash';
+    address?: string;
+    email?: string;
+    phone?: string;
+}
+
+export type FormErrors = Partial<Record<keyof IOrder, string>>;
+
+export interface IAppState  {
+  catalog: IProduct[];
+  basket: IProduct[];
+  preview: IProduct | null;
+  order: IOrder;
+  formErrors: FormErrors;
 };
+
+export interface IOrderView {
+    payment: IOrder['payment'];
+    address: string;
+}
+
+export interface IContacts {
+    email: string;
+    phone: string;
+}
 
 //  export type SuccessOrder = {
     
 //   }
-export interface IProductPreview extends Product {
+export interface IProductPreview extends IProduct {
   inBasket: boolean
 }
 
