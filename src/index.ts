@@ -7,14 +7,14 @@ import { ProductModel } from './components/models/ProductModel';
 import { ProductCard } from './components/View/ProductCard';
 import { cloneTemplate, ensureElement } from './utils/utils';
 import { PageView } from './components/View/PageView';
-import { ProductModal } from './components/View/ProductModal';
+import { ProductPreview } from './components/View/ProductPreview';
 import { Product } from './types';
 import { Modal } from './components/Common/Modal';
-import { BasketModal } from './components/View/BasketModal';
+import { Basket } from './components/View/Basket';
 import { BasketProduct } from './components/View/BasketProduct';
-import { OrderModal } from './components/View/OrderModal';
-import { ContactsModal } from './components/View/ContactsModal';
-import { SuccessModal } from './components/View/SuccessModal';
+import { OrderView } from './components/View/OrderView';
+import { Contacts } from './components/View/Contactsl';
+import { Success } from './components/View/Success';
 
 
 const events = new EventEmitter()
@@ -24,7 +24,8 @@ const page = new PageView(document.querySelector('.page') as HTMLElement, events
 
 const marketApi = new MarketApi(api, events)
 const productModel = new ProductModel(events)
-const modal = new Modal(document.querySelector('#modal-container'), events)
+const pageWrapper = ensureElement<HTMLElement>('.page__wrapper')
+const modal = new Modal(document.querySelector('#modal-container'), events, pageWrapper)
 
 const productTemplate = document.querySelector('#card-catalog') as HTMLTemplateElement;
 const productPrivewTemplate = document.querySelector('#card-preview') as HTMLTemplateElement;
@@ -36,10 +37,10 @@ const contactsTemplate = document.querySelector('#contacts') as HTMLTemplateElem
 const successTemplate = document.querySelector('#success') as HTMLTemplateElement;
 
 
-const basketModal = new BasketModal(cloneTemplate(basketTemplate), events)
-const orderModal = new OrderModal(cloneTemplate(orderTemplate), events);
-const contactsModal = new ContactsModal(cloneTemplate(contactsTemplate), events)
-const successModal = new SuccessModal(cloneTemplate(successTemplate), events)
+const basket = new Basket(cloneTemplate(basketTemplate), events)
+const orderView = new OrderView(cloneTemplate(orderTemplate), events);
+const contacts = new Contacts(cloneTemplate(contactsTemplate), events)
+const success = new Success(cloneTemplate(successTemplate), events)
 
 
 
@@ -68,15 +69,15 @@ events.on('product:changed', () => {
     count: productModel.getTotal()
   })
 
-  const ItemBasketHTMLArray = productModel.getBasket().map((product, index) => {
+  const itemBasketHTMLArray = productModel.getBasket().map((product, index) => {
     const basketProduct = new BasketProduct(cloneTemplate(basketCardTemplate), events, product)
 
     basketProduct.index = String(index + 1);
     return basketProduct.render(product)
   })
 
-  basketModal.render({
-    basketListItem: ItemBasketHTMLArray,
+  basket.render({
+    basketListItem: itemBasketHTMLArray,
     orderTotalPrice: productModel.updateOrderTotal()
   })
   })
@@ -84,7 +85,7 @@ events.on('product:changed', () => {
 events.on('productModal:rerender', (product: Product) => {
   modal.close()
   const inBasket = productModel.isInBasket(product.id)
-  const productModal = new ProductModal(cloneTemplate(productPrivewTemplate),events, product).render({
+  const productModal = new ProductPreview(cloneTemplate(productPrivewTemplate),events, product).render({
     id: product.id,
   title: product.title,
   description: product.description,
@@ -102,19 +103,19 @@ events.on('productModal:open', (product: Product) => {
 
 events.on('basketModal:open', () => {
   const basketItems = productModel.getBasket()
-  modal.open(basketModal.createBasketModal(basketItems))
+  modal.open(basket.createBasketModal(basketItems))
 
   
 })
 
 events.on('orderModal:open', () => {
-  modal.open(orderModal.render())
+  modal.open(orderView.render())
 })
 
 events.on('product:add', (product: Product) => {
   productModel.addToBasket(product);
   modal.close()
-  const productModal = new ProductModal(cloneTemplate(productPrivewTemplate),events, product).render({
+  const productModal = new ProductPreview(cloneTemplate(productPrivewTemplate),events, product).render({
      id: product.id,
     title: product.title,
     description: product.description,
@@ -131,7 +132,7 @@ events.on('basket:removeProduct', (product: Product) => {
   productModel.removeFromBasket(product.id);
   modal.close()
   const basketItems = productModel.getBasket()
-  modal.open(basketModal.createBasketModal(basketItems))
+  modal.open(basket.createBasketModal(basketItems))
 });
 
 events.on('product:removeProduct', (product: Product) => {
@@ -145,11 +146,11 @@ events.on('modal:close', () => {
   modal.close()
 })
 
-events.on('order:payCategory', (item) => {
-  const category = Object.values(item)
-  const [values] = [...category]
-  productModel.getState().order.payment = values
-  events.emit('order:change:button', productModel.getOrder())
+events.on('order:payCategory', (item: {name: 'card' | 'cash'}) => {
+  const category = item.name
+  // const [values] = [...category]
+  productModel.setPaymentValue(category)
+  
 }) 
 
 events.on("form:reset", (form: HTMLFormElement) => {
@@ -157,20 +158,20 @@ events.on("form:reset", (form: HTMLFormElement) => {
 })
 
 events.on('order:submit', () => {
-  orderModal.closeOrderModal()
-  modal.open(contactsModal.render())
+  orderView.closeOrderModal()
+  modal.open(contacts.render())
 })
 
 events.on('validate:inspect', (text: HTMLInputElement) => {
   productModel.setAdress(text.value)
-  orderModal.render({
+  orderView.render({
   validData: productModel.getValidAdress(),
   validButton: productModel.getValidButtons()
 })
 })
 
 events.on('validateButton:inspect', () => {
-  orderModal.render({
+  orderView.render({
     validData: productModel.getValidAdress(),
   validButton: productModel.getValidButtons()
   })
@@ -182,15 +183,15 @@ events.on('contacts:input', (data: {
 }) => {
   productModel.setContacts(data.field, data.value)
   const isValid = productModel.validateInputs()
-  contactsModal.render({
+  contacts.render({
     valid: isValid
   })
 })
 
 events.on("order:success", () => {
   modal.close();
-  contactsModal.closeContactsModal()
-  modal.open(successModal.render({
+  contacts.closeContactsModal()
+  modal.open(success.render({
     total: productModel.updateOrderTotal()
   }))
   events.emit("basket:reset");
@@ -208,7 +209,7 @@ events.on('order:reset', () => {
 })
 
 events.on('contacts:submit', () => {
-  marketApi.buyProduct(productModel.getOrder())
+  marketApi.buyProduct(productModel.successOrder())
   .then(() => {
     events.emit('order:success')
   })

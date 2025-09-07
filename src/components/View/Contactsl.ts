@@ -2,11 +2,11 @@ import { ensureAllElements, ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 
-interface IContctsModal {
+interface IContcts {
   valid: boolean;
 }
 
-export class ContactsModal extends Component<IContctsModal> {
+export class Contacts extends Component<IContcts> {
    protected events: IEvents;
    protected form: HTMLFormElement;
     protected submitButton: HTMLButtonElement;

@@ -3,13 +3,13 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 
-interface IBasketModal {
+interface IBasket {
   basketListItem: HTMLElement[];
   orderTotalPrice: number;
 }
 
 
-export class BasketModal extends Component<IBasketModal> {
+export class Basket extends Component<IBasket> {
 
   protected basketList: HTMLUListElement;
   protected busketButton: HTMLButtonElement;

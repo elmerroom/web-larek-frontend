@@ -2,11 +2,11 @@ import { ensureElement } from "../../utils/utils";
 import { Component } from "../base/Component";
 import { IEvents } from "../base/events";
 
-interface ISuccessModal {
+interface ISuccess {
   total: number
 }
 
-export class SuccessModal extends Component<ISuccessModal> {
+export class Success extends Component<ISuccess> {
   private description: HTMLElement;
   private closeButton: HTMLButtonElement;
   private events: IEvents

@@ -13,7 +13,7 @@ export type Order = {
   email?: string;
   phone?: string;
   items?: string[];
-  total: number;
+  total?: number;
 };
 
 export interface ApiListResponse<T>  {
@@ -27,6 +27,13 @@ export type AppState = {
   preview: Product | null;
   order: Order;
 };
+
+//  export type SuccessOrder = {
+    
+//   }
+export interface IProductPreview extends Product {
+  inBasket: boolean
+}
 
 export interface IApiMethods {
   get<T>(uri: string): Promise<T>;

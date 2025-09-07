@@ -13,8 +13,8 @@ export class ProductModel {
     address: null,
     email: undefined,
     phone: undefined,
-    items: [],
-    total: 0
+    // items: [],
+    // total: 0
   }
 };
   protected products: Product[] = []
@@ -29,14 +29,14 @@ export class ProductModel {
     }
     this.events.emit('basket:changed')
 
-    this.state.order.items = this.state.basket.map(product => product.id)
+    // this.state.order.items = this.state.basket.map(product => product.id)
     return this.state.basket
   }
 
   removeFromBasket(productId: string) {
     this.state.basket = this.state.basket.filter(item => item.id !== productId);
     this.events.emit('basket:changed');
-    this.state.order.items = this.state.basket.map(product => product.id)
+    // this.state.order.items = this.state.basket.map(product => product.id)
   }
 
   getProducts(): Product[] {
@@ -52,10 +52,12 @@ export class ProductModel {
   }
 
   updateOrderTotal(): number {
-    this.state.order.total = this.state.basket.reduce(
+    // this.state.order.total = this.state.basket.reduce(
+    //     (sum, item) => sum + (item.price || 0), 0
+    // );
+    return this.state.basket.reduce(
         (sum, item) => sum + (item.price || 0), 0
     );
-    return this.state.order.total
   }
 
   clearBasket() {
@@ -69,9 +71,20 @@ export class ProductModel {
     address: null,
     email: undefined,
     phone: undefined,
-    items: [],
-    total: 0
+    // items: [],
+    // total: 0
     }
+  }
+
+ 
+
+  successOrder(): Order {
+    const order = this.state.order
+    order.total = this.state.basket.reduce(
+        (sum, item) => sum + (item.price || 0), 0
+    );
+    order.items = this.state.basket.map(product => product.id)
+    return order
   }
 
   setProducts(products: Product[]) {
@@ -83,12 +96,17 @@ export class ProductModel {
     return this.state.basket
   };
 
-   getState(): AppState {
-    return this.state;
-  }
+  //  getState(): AppState {
+  //   return this.state;
+  // }
 
   getOrder(): Order {
     return this.state.order
+  }
+
+  setPaymentValue(value: 'cash' | 'card') {
+    this.state.order.payment = value;
+    this.events.emit('order:change:button', this.state.order)
   }
 
   isInBasket(productId: string): boolean {

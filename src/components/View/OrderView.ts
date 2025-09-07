@@ -8,7 +8,7 @@ interface IDataOrder {
     validButton: boolean;
 }
 
-export class OrderModal extends Component<IDataOrder> {
+export class OrderView extends Component<IDataOrder> {
     protected events: IEvents;
     protected _form: HTMLFormElement;
     protected paymentButtons: HTMLButtonElement[];
@@ -38,8 +38,10 @@ export class OrderModal extends Component<IDataOrder> {
             button.addEventListener('click', (event) => {
         
             const target = event.target as HTMLButtonElement;
-            const targerName = target.name
-            this.events.emit("order:payCategory", {targerName})
+            const targerName = {
+              name:  target.name
+            }
+            this.events.emit("order:payCategory", targerName)
             this.events.emit('validate:inspect', this.addressInput)
         })
 

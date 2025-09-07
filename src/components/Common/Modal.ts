@@ -9,11 +9,12 @@ export class Modal<T> extends Component<T> {
   protected pageWrapper: HTMLElement;
   protected _content: HTMLElement
 
-  constructor(container: HTMLElement, events: IEvents) {
+  constructor(container: HTMLElement, events: IEvents, pageWrapper: HTMLElement) {
     super(container);
     this.events = events;
+    this.pageWrapper = pageWrapper;
     const closeButtonElement = this.container.querySelector(".modal__close");
-    this.pageWrapper = ensureElement<HTMLElement>('.page__wrapper');
+    // this.pageWrapper = ensureElement<HTMLElement>('.page__wrapper');
     this._content = ensureElement<HTMLElement>('.modal__content', this.container)
 
       closeButtonElement.addEventListener("click", this.close.bind(this));
