@@ -13,7 +13,8 @@ export class PageView extends Component<IPageView> {
   protected productGallery: HTMLElement;
   protected basket: HTMLButtonElement;
   protected basketCount: HTMLSpanElement;
-  protected events: IEvents
+  protected events: IEvents;
+  protected _wrapper: HTMLElement;
 
 
   constructor(container: HTMLElement, events: IEvents) {
@@ -23,8 +24,12 @@ export class PageView extends Component<IPageView> {
     this.productGallery = ensureElement('.gallery', this.container);
     this.basket = ensureElement('.header__basket', this.container) as HTMLButtonElement;
     this.basketCount = ensureElement('.header__basket-counter', this.container);
+    this._wrapper = ensureElement<HTMLElement>('.page__wrapper');
     
-    this.basket.addEventListener('click', () => this.events.emit('basketModal:open'))
+    this.basket.addEventListener('click', () => {
+      this.events.emit('basketModal:open')
+      this.events.emit('productModal:preview', {preview: false})
+    })
   }
 
   set productList(items: HTMLElement[]) {
@@ -34,5 +39,13 @@ export class PageView extends Component<IPageView> {
   set count(value: number) {
     this.setText(this.basketCount, value)
   }
+
+  set locked(value: boolean) {
+        if (value) {
+            this._wrapper.classList.add('page__wrapper_locked');
+        } else {
+            this._wrapper.classList.remove('page__wrapper_locked');
+        }
+    }
 
 }

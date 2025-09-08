@@ -33,7 +33,7 @@ export type FormErrors = Partial<Record<keyof IOrder, string>>;
 export interface IAppState  {
   catalog: IProduct[];
   basket: IProduct[];
-  preview: IProduct | null;
+  preview: boolean;
   order: IOrder;
   formErrors: FormErrors;
 };
@@ -48,9 +48,6 @@ export interface IContacts {
     phone: string;
 }
 
-//  export type SuccessOrder = {
-    
-//   }
 export interface IProductPreview extends IProduct {
   inBasket: boolean
 }

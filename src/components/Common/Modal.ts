@@ -6,15 +6,12 @@ import { ensureElement } from '../../utils/utils';
 export class Modal<T> extends Component<T> {
   protected modal: HTMLElement;
   protected events: IEvents;
-  protected pageWrapper: HTMLElement;
   protected _content: HTMLElement
 
-  constructor(container: HTMLElement, events: IEvents, pageWrapper: HTMLElement) {
+  constructor(container: HTMLElement, events: IEvents) {
     super(container);
     this.events = events;
-    this.pageWrapper = pageWrapper;
     const closeButtonElement = this.container.querySelector(".modal__close");
-    // this.pageWrapper = ensureElement<HTMLElement>('.page__wrapper');
     this._content = ensureElement<HTMLElement>('.modal__content', this.container)
 
       closeButtonElement.addEventListener("click", this.close.bind(this));
@@ -36,14 +33,15 @@ export class Modal<T> extends Component<T> {
       }
       this.container.classList.add("modal_active");
       document.addEventListener("keyup", this.handleEscUp);
-      this.pageWrapper.classList.add('page__wrapper_locked');
+      this.events.emit('modal:open');
         }
   
     close() {
       this.container.classList.remove("modal_active");
       document.removeEventListener("keyup", this.handleEscUp);
-       this.pageWrapper.classList.remove('page__wrapper_locked')
+      this.events.emit('modal:close');
        this.content = null
+       this.events.emit('order:reset')
     }
 
   

@@ -1,13 +1,8 @@
 import { IEvents } from "../base/events";
 import { IProductPreview, IProduct } from "../../types";
-import { Component } from "../base/Component";
 import { ensureElement } from "../../utils/utils";
 import { CDN_URL } from "../../utils/constants";
-import { ProductComponent } from "./ProductComponent";
-
-
-
-
+import { ProductComponent } from "../Common/ProductComponent";
 
 export class ProductPreview extends ProductComponent{
 
@@ -40,42 +35,12 @@ export class ProductPreview extends ProductComponent{
 
     set category(value: string) {
       this.setText(this.categoryElement, value);
-      
-      switch (value) {
-      case 'хард-скил':
-        this.categoryElement.classList.add('card__category_hard');
-        break;
-      case 'софт-скил':
-        this.categoryElement.classList.add('card__category_soft');
-        break;
-      case 'дополнительное':
-        this.categoryElement.classList.add('card__category_additional');
-        break;
-      case 'кнопка':
-        this.categoryElement.classList.add('card__category_button');
-        break;
-      default:
-        this.categoryElement.classList.add('card__category_other');
-    }
+      this.switchCaregory(this.categoryElement, value)
     }
 
     set description(value: string) {
       this.setText(this.descriptionElement, value)
     }
-
-    
-
-    // set price(value: number | null) {
-    //   this.setText(this.priceElement, value ? `${value} синапсов` : `Бесценно`);
-    //   if (!value) {
-    //     this.buttonElement.textContent = 'Недоступно'
-    //   super.setDisabled(this.buttonElement, true)
-    //   }
-    // }
-
-    // set id(value: string) {
-    //   this.idCard = value
-    // }
 
     set inBasket(value: boolean) {
       if (value) {
