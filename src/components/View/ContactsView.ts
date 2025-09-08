@@ -3,7 +3,7 @@ import { IEvents } from "../base/events";
 import { Form } from "../Common/Form";
 
 
-export class Contacts extends Form<IContacts> {
+export class ContactsView extends Form<IContacts> {
     constructor(container: HTMLFormElement, events: IEvents) {
         super(container, events);
     }

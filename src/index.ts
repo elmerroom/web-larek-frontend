@@ -13,8 +13,8 @@ import { Modal } from './components/Common/Modal';
 import { Basket } from './components/View/Basket';
 import { BasketProduct } from './components/View/BasketProduct';
 import { OrderView } from './components/View/OrderView';
-import { Contacts } from './components/View/Contacts';
-import { Success } from './components/View/Success';
+import { ContactsView } from './components/View/ContactsView';
+import { SuccessView } from './components/View/SuccessView';
 
 
 const events = new EventEmitter()
@@ -38,8 +38,8 @@ const successTemplate = document.querySelector('#success') as HTMLTemplateElemen
 
 const basket = new Basket(cloneTemplate(basketTemplate), events)
 const orderView = new OrderView(cloneTemplate(orderTemplate), events);
-const contacts = new Contacts(cloneTemplate(contactsTemplate), events)
-const success = new Success(cloneTemplate(successTemplate), events)
+const contacts = new ContactsView(cloneTemplate(contactsTemplate), events)
+const success = new SuccessView(cloneTemplate(successTemplate), events)
 
 
 

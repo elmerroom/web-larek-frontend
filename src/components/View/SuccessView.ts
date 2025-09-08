@@ -6,7 +6,7 @@ interface ISuccess {
   total: number
 }
 
-export class Success extends Component<ISuccess> {
+export class SuccessView extends Component<ISuccess> {
   private description: HTMLElement;
   private closeButton: HTMLButtonElement;
   private events: IEvents
